@@ -106,158 +106,228 @@ export default function GetQuote() {
     const included = selectedFeatures.filter(f => f.cost === 0).map(f => f.label);
     const addons   = selectedFeatures.filter(f => f.cost > 0);
     const date = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
-    const qno = `TWY-${Date.now().toString().slice(-6)}`;
+    const qno  = `TWY-${Date.now().toString().slice(-6)}`;
 
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ unit: "mm", format: "a4" });
-      const W = doc.internal.pageSize.getWidth();
-      const M = 18; // margin
+      const W   = doc.internal.pageSize.getWidth();   // 210mm
+      const M   = 15;  // left margin
+      const RM  = W - M; // right margin position
 
-      // ── Header ────────────────────────────────────────────────────────────
+      // ─────────────────────────────────────────────────────────────
+      // HEADER
+      // ─────────────────────────────────────────────────────────────
       doc.setFillColor(28, 22, 12);
-      doc.rect(0, 0, W, 38, "F");
+      doc.rect(0, 0, W, 32, "F");
       doc.setFillColor(196, 150, 106);
-      doc.rect(0, 35, W, 2.5, "F");
+      doc.rect(0, 29, W, 2, "F");
 
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(20); doc.setFont("helvetica", "bold");
-      doc.text("TheWebYatra", M, 16);
-      doc.setFontSize(8); doc.setFont("helvetica", "normal");
+      doc.setFontSize(18); doc.setFont("helvetica", "bold");
+      doc.text("TheWebYatra", M, 13);
+      doc.setFontSize(7.5); doc.setFont("helvetica", "normal");
       doc.setTextColor(196, 150, 106);
-      doc.text("WE CODE. YOU GROW.  |  thewebyatra.com  |  support@thewebyatra.com  |  +91 89202 91416", M, 24);
-      doc.setTextColor(200, 180, 150);
-      doc.text(`Quotation No: ${qno}  |  Date: ${date}`, M, 30);
+      doc.text("WE CODE. YOU GROW.", M, 19);
+      doc.setTextColor(180, 160, 130);
+      doc.text(`thewebyatra.com  |  support@thewebyatra.com  |  +91 89202 91416`, M, 25);
 
-      let y = 52;
+      // Right side: Quote No + Date
+      doc.setFont("helvetica", "bold"); doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.text(`Quote No: ${qno}`, RM, 13, { align: "right" });
+      doc.setFont("helvetica", "normal");
+      doc.text(`Date: ${date}`, RM, 19, { align: "right" });
 
-      // ── Document Title ────────────────────────────────────────────────────
-      doc.setFontSize(17); doc.setFont("helvetica", "bold");
-      doc.setTextColor(28, 22, 12);
-      doc.text("PROJECT QUOTATION", M, y); y += 4;
-      doc.setDrawColor(196, 150, 106); doc.setLineWidth(0.8);
-      doc.line(M, y, M + 60, y); y += 10;
+      let y = 42;
 
-      // ── Client Details ────────────────────────────────────────────────────
+      // ─────────────────────────────────────────────────────────────
+      // DOCUMENT TITLE
+      // ─────────────────────────────────────────────────────────────
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
+      doc.text("SOFTWARE REQUIREMENTS & QUOTATION DOCUMENT", M, y); y += 3;
+      doc.setLineWidth(0.6); doc.setDrawColor(196, 150, 106);
+      doc.line(M, y, RM, y); y += 8;
+
+      // ─────────────────────────────────────────────────────────────
+      // CLIENT DETAILS BOX
+      // ─────────────────────────────────────────────────────────────
       doc.setFillColor(252, 248, 242);
-      doc.roundedRect(M, y, W - M * 2, 28, 3, 3, "F");
-      doc.setDrawColor(226, 212, 190); doc.setLineWidth(0.3);
-      doc.roundedRect(M, y, W - M * 2, 28, 3, 3, "S");
-      doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
-      doc.text("CLIENT DETAILS", M + 6, y + 8);
-      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 40, 20);
-      doc.text(`Name:   ${form.name || "—"}`, M + 6, y + 16);
-      doc.text(`Phone:  ${form.phone || "—"}`, M + 6, y + 22);
-      if (form.email) doc.text(`Email:  ${form.email}`, M + 80, y + 16);
-      y += 36;
+      doc.setLineWidth(0.25); doc.setDrawColor(220, 200, 170);
+      doc.roundedRect(M, y, W - M * 2, 24, 2, 2, "FD");
+      doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
+      doc.text("PREPARED FOR", M + 4, y + 7);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(40, 25, 10);
+      doc.text(form.name || "—", M + 4, y + 14);
+      doc.setFontSize(8); doc.setTextColor(80, 60, 40);
+      doc.text(`Phone: ${form.phone}${form.email ? "   |   Email: " + form.email : ""}`, M + 4, y + 20);
+      y += 30;
 
-      // ── Project Scope ─────────────────────────────────────────────────────
-      doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
-      doc.text("PROJECT SCOPE", M, y); y += 2;
-      doc.setLineWidth(0.3); doc.setDrawColor(226, 212, 190);
-      doc.line(M, y, W - M, y); y += 8;
+      // ─────────────────────────────────────────────────────────────
+      // SECTION 1 — PROJECT SCOPE
+      // ─────────────────────────────────────────────────────────────
+      const sectionTitle = (title: string) => {
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
+        doc.text(title, M, y); y += 1.5;
+        doc.setLineWidth(0.25); doc.setDrawColor(220, 200, 170);
+        doc.line(M, y, RM, y); y += 5;
+      };
 
-      const tableData = [
-        ["Project Type",  `${projectType?.label ?? "—"}`,  fmt(basePrice)],
-        ["Page Count",    `${pagesOption?.label ?? "—"}`,   pagesExtra > 0 ? `+${fmt(pagesExtra)}` : "Included"],
-        ["Timeline",      `${timelineOpt?.label ?? "—"}`,   timelineMod > 0 ? `+${fmt(timelineMod)} rush` : timelineMod < 0 ? `-${fmt(Math.abs(timelineMod))} disc.` : "No change"],
-      ];
+      sectionTitle("1. PROJECT SCOPE");
 
-      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
-      doc.text("ITEM", M, y); doc.text("DETAIL", M + 55, y); doc.text("AMOUNT", W - M, y, { align: "right" });
-      y += 2; doc.line(M, y, W - M, y); y += 7;
+      // Table header
+      const col1 = M, col2 = M + 52, col3 = M + 110, col4 = RM;
+      doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
+      doc.setFillColor(245, 238, 225);
+      doc.rect(M, y - 2, W - M * 2, 8, "F");
+      doc.text("ITEM", col1 + 2, y + 4);
+      doc.text("SPECIFICATION", col2, y + 4);
+      doc.text("REMARKS", col3, y + 4);
+      doc.text("AMOUNT", col4, y + 4, { align: "right" });
+      y += 9;
+      doc.setLineWidth(0.2); doc.line(M, y - 1, RM, y - 1);
 
-      tableData.forEach(([item, detail, amount]) => {
-        doc.setFont("helvetica", "normal"); doc.setTextColor(40, 30, 15);
-        doc.text(item, M, y); doc.text(detail, M + 55, y);
+      const tableRow = (item: string, spec: string, remark: string, amount: string, shade = false) => {
+        if (shade) { doc.setFillColor(250, 246, 240); doc.rect(M, y - 2, W - M * 2, 8, "F"); }
+        doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(40, 28, 12);
+        doc.text(item, col1 + 2, y + 4);
+        doc.text(spec, col2, y + 4);
+        doc.text(remark, col3, y + 4);
         doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-        doc.text(amount, W - M, y, { align: "right" });
+        doc.text(amount, col4, y + 4, { align: "right" });
+        doc.setLineWidth(0.1); doc.setDrawColor(230, 215, 195);
+        doc.line(M, y + 6, RM, y + 6);
         y += 8;
-      });
+      };
+
+      tableRow("Project Type",  projectType?.label ?? "—",    "Base Development",  fmt(basePrice));
+      tableRow("Pages / Screens", pagesOption?.label ?? "—",   "UI Screens",         pagesExtra > 0 ? `+${fmt(pagesExtra)}` : "Included", true);
+      tableRow("Timeline",       timelineOpt?.label ?? "—",    "Delivery Schedule",
+        timelineMod > 0 ? `+${fmt(timelineMod)} rush` : timelineMod < 0 ? `-${fmt(Math.abs(timelineMod))}` : "Standard");
 
       if (featureTotal > 0) {
-        doc.setFont("helvetica", "normal"); doc.setTextColor(40, 30, 15);
-        doc.text("Add-on Features", M, y); doc.text(`${addons.length} selected`, M + 55, y);
-        doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-        doc.text(`+${fmt(featureTotal)}`, W - M, y, { align: "right" });
-        y += 8;
+        tableRow("Add-on Features", `${addons.length} feature(s)`, "Extra Modules", `+${fmt(featureTotal)}`, true);
       }
 
-      doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 6;
+      y += 2;
 
-      // ── Total ──────────────────────────────────────────────────────────────
+      // Total row
       doc.setFillColor(28, 22, 12);
-      doc.roundedRect(M, y, W - M * 2, 18, 3, 3, "F");
-      doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(255, 255, 255);
-      doc.text("TOTAL ESTIMATE", M + 6, y + 7);
-      doc.setFontSize(15); doc.setTextColor(196, 150, 106);
-      doc.text(fmt(totalPrice), W - M - 4, y + 8, { align: "right" });
-      doc.setFontSize(8); doc.setTextColor(180, 160, 130);
-      doc.text(`(~ $${usdPrice} USD)`, W - M - 4, y + 15, { align: "right" });
-      y += 26;
+      doc.rect(M, y, W - M * 2, 11, "F");
+      doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(255, 255, 255);
+      doc.text("TOTAL DEVELOPMENT ESTIMATE", col1 + 4, y + 7.5);
+      doc.setFontSize(12); doc.setTextColor(196, 150, 106);
+      doc.text(fmt(totalPrice), col4, y + 7.5, { align: "right" });
+      y += 13;
 
-      // ── Always Included ───────────────────────────────────────────────────
+      doc.setFontSize(7.5); doc.setFont("helvetica", "italic"); doc.setTextColor(120, 90, 50);
+      doc.text(`(Approx. USD ${usdPrice} at current exchange rate)`, col4, y, { align: "right" });
+      y += 8;
+
+      // ─────────────────────────────────────────────────────────────
+      // IMPORTANT NOTE
+      // ─────────────────────────────────────────────────────────────
+      doc.setFillColor(255, 248, 230);
+      doc.setLineWidth(0.3); doc.setDrawColor(220, 170, 80);
+      doc.roundedRect(M, y, W - M * 2, 18, 2, 2, "FD");
+      doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(160, 100, 20);
+      doc.text("⚠  IMPORTANT NOTICE", M + 4, y + 7);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(80, 55, 15);
+      doc.text("This quote covers DEVELOPMENT CHARGES ONLY. Domain registration, hosting/server charges,", M + 4, y + 13);
+      doc.text("third-party API fees, and database hosting costs are NOT included and billed separately.", M + 4, y + 18);
+      y += 24;
+
+      // ─────────────────────────────────────────────────────────────
+      // SECTION 2 — INCLUDED FEATURES
+      // ─────────────────────────────────────────────────────────────
+      sectionTitle("2. FEATURES INCLUDED IN SCOPE");
+
       if (included.length) {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
-        doc.text("ALWAYS INCLUDED (FREE)", M, y); y += 2;
-        doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 7;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(34, 120, 60);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(34, 120, 60);
+        doc.text("Standard Features (Included Free)", M + 2, y); y += 5;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(30, 80, 40);
         const half = Math.ceil(included.length / 2);
         included.forEach((l, i) => {
-          const col = i < half ? M : M + (W - M * 2) / 2;
-          const row = y + (i < half ? i : i - half) * 6;
-          doc.text(`✓  ${l}`, col, row);
+          const cx = i < half ? M + 2 : M + (W - M * 2) / 2 + 5;
+          const cy = y + (i < half ? i : i - half) * 6;
+          doc.text(`✓  ${l}`, cx, cy);
         });
-        y += Math.ceil(included.length / 2) * 6 + 6;
+        y += Math.ceil(included.length / 2) * 6 + 5;
       }
 
-      // ── Selected Add-ons ──────────────────────────────────────────────────
       if (addons.length) {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
-        doc.text("SELECTED ADD-ONS", M, y); y += 2;
-        doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 7;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9);
-        addons.forEach(f => {
-          doc.setTextColor(80, 50, 20); doc.text(`+  ${f.label}`, M, y);
-          doc.setTextColor(139, 94, 60); doc.text(`+${fmt(f.cost)}`, W - M, y, { align: "right" });
-          y += 7;
+        doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(139, 94, 60);
+        doc.text("Additional Features (Add-ons)", M + 2, y); y += 5;
+        addons.forEach((f, i) => {
+          const cx = i % 2 === 0 ? M + 2 : M + (W - M * 2) / 2 + 5;
+          if (i % 2 === 0 && i > 0) y += 6;
+          doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(80, 50, 20);
+          doc.text(`+  ${f.label}`, cx, y);
+          doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
+          if (i % 2 === 0) doc.text(`+${fmt(f.cost)}`, col4, y, { align: "right" });
         });
-        y += 4;
+        y += 10;
       }
 
-      // ── Project Notes ─────────────────────────────────────────────────────
+      // Free maintenance note
+      doc.setFillColor(240, 252, 245);
+      doc.setLineWidth(0.25); doc.setDrawColor(100, 200, 130);
+      doc.roundedRect(M, y, W - M * 2, 10, 2, 2, "FD");
+      doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(20, 130, 60);
+      doc.text("✓  1 Month FREE Post-Launch Maintenance & Bug Fixes Included", M + 4, y + 6.5);
+      y += 16;
+
+      // ─────────────────────────────────────────────────────────────
+      // SECTION 3 — PROJECT NOTES
+      // ─────────────────────────────────────────────────────────────
       if (form.description) {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
-        doc.text("PROJECT NOTES", M, y); y += 2;
-        doc.line(M, y, W - M, y); y += 7;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 40, 20);
-        const lines = doc.splitTextToSize(form.description, W - M * 2);
-        doc.text(lines, M, y); y += lines.length * 6 + 6;
+        sectionTitle("3. CLIENT REQUIREMENTS / NOTES");
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(50, 35, 15);
+        const noteLines = doc.splitTextToSize(form.description, W - M * 2 - 4);
+        doc.text(noteLines, M + 2, y);
+        y += noteLines.length * 6 + 8;
       }
 
-      // ── Terms ─────────────────────────────────────────────────────────────
-      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
-      doc.text("TERMS & CONDITIONS", M, y); y += 2;
-      doc.line(M, y, W - M, y); y += 7;
-      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 80, 60);
-      const terms = [
-        "1. This quotation is valid for 30 days from the date of issue.",
-        "2. Final price may vary based on exact scope and requirements.",
-        "3. 50% advance payment required to commence work.",
-        "4. Delivery timeline begins after advance payment and requirement sign-off.",
-        "5. All source code, designs and assets will be handed over upon full payment.",
-      ];
-      terms.forEach(t => { doc.text(t, M, y); y += 6; });
-      y += 4;
+      // ─────────────────────────────────────────────────────────────
+      // SECTION 4 — TERMS & CONDITIONS
+      // ─────────────────────────────────────────────────────────────
+      const termNum = form.description ? "4" : "3";
+      sectionTitle(`${termNum}. TERMS & CONDITIONS`);
 
-      // ── Footer ────────────────────────────────────────────────────────────
+      const terms = [
+        ["Validity",       "This quotation is valid for 30 days from the date of issue."],
+        ["Advance Payment","50% of the total amount is required before project commencement."],
+        ["Balance Payment","Remaining 50% is due upon project completion before final delivery."],
+        ["Timeline",       "Delivery timeline starts after advance payment and signed requirement confirmation."],
+        ["Scope Changes",  "Any additional features or changes outside this scope will be quoted separately."],
+        ["Exclusions",     "Domain, hosting, server, database, and third-party API costs are NOT included."],
+        ["Maintenance",    "1 month free post-launch bug fixes. Extended maintenance available on request."],
+        ["Ownership",      "Full source code and assets transferred to client upon complete payment."],
+      ];
+
+      doc.setFontSize(8.5);
+      terms.forEach(([title, detail], i) => {
+        if (i % 2 === 0) { doc.setFillColor(250, 246, 240); doc.rect(M, y - 2, W - M * 2, 7.5, "F"); }
+        doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
+        doc.text(`${i + 1}. ${title}:`, M + 2, y + 3.5);
+        doc.setFont("helvetica", "normal"); doc.setTextColor(50, 35, 15);
+        doc.text(detail, M + 38, y + 3.5);
+        doc.setLineWidth(0.1); doc.setDrawColor(230, 215, 195);
+        doc.line(M, y + 5.5, RM, y + 5.5);
+        y += 8;
+      });
+      y += 6;
+
+      // ─────────────────────────────────────────────────────────────
+      // FOOTER
+      // ─────────────────────────────────────────────────────────────
       doc.setLineWidth(0.5); doc.setDrawColor(196, 150, 106);
-      doc.line(M, y, W - M, y); y += 6;
-      doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(140, 110, 70);
+      doc.line(M, y, RM, y); y += 6;
+      doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
       doc.text("Thank you for choosing TheWebYatra. We look forward to building something great together!", M, y);
-      y += 5;
-      doc.setFont("helvetica", "normal"); doc.setTextColor(160, 130, 90);
-      doc.text(`Quotation No: ${qno}  |  support@thewebyatra.com  |  +91 89202 91416  |  thewebyatra.com`, M, y);
+      y += 6;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(140, 110, 70);
+      doc.text(`${qno}  |  support@thewebyatra.com  |  +91 89202 91416  |  thewebyatra.com`, M, y);
 
       doc.save(`TheWebYatra_Quotation_${form.name.replace(/\s+/g, "_") || "Client"}_${qno}.pdf`);
     } catch (err) {
