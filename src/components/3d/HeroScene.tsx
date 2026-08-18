@@ -5,6 +5,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { MeshDistortMaterial, Sphere, Float, Stars, Torus } from "@react-three/drei";
 import * as THREE from "three";
 
+// ─── Globe components (unchanged) ────────────────────────────────────────────
+
 function DistortedSphere({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: number }> }) {
   const meshRef = useRef<THREE.Mesh>(null);
   useFrame((state) => {
@@ -16,15 +18,7 @@ function DistortedSphere({ mousePos }: { mousePos: React.MutableRefObject<{ x: n
   return (
     <Float speed={2} rotationIntensity={0.3} floatIntensity={0.8}>
       <Sphere ref={meshRef} args={[1.5, 64, 64]}>
-        <MeshDistortMaterial
-          color="#C4966A"
-          attach="material"
-          distort={0.45}
-          speed={2.5}
-          roughness={0.15}
-          metalness={0.6}
-          wireframe={false}
-        />
+        <MeshDistortMaterial color="#C4966A" attach="material" distort={0.45} speed={2.5} roughness={0.15} metalness={0.6} wireframe={false} />
       </Sphere>
     </Float>
   );
@@ -78,19 +72,14 @@ function FloatingParticles() {
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 10;
+      pos[i * 3]     = (Math.random() - 0.5) * 10;
       pos[i * 3 + 1] = (Math.random() - 0.5) * 10;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
     }
     return pos;
   }, []);
-
   const ref = useRef<THREE.Points>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    ref.current.rotation.y = state.clock.getElapsedTime() * 0.03;
-  });
-
+  useFrame((state) => { if (ref.current) ref.current.rotation.y = state.clock.getElapsedTime() * 0.03; });
   return (
     <points ref={ref}>
       <bufferGeometry>
@@ -100,6 +89,76 @@ function FloatingParticles() {
     </points>
   );
 }
+
+// ─── Globe Stand (Three.js, stays fixed in world space) ──────────────────────
+
+function GlobeStand() {
+  const bronze = useMemo(() => new THREE.MeshStandardMaterial({
+    color: new THREE.Color("#C4966A"),
+    metalness: 0.85,
+    roughness: 0.25,
+  }), []);
+
+  // Curved arm: a torus arc from the base up to the top of the globe
+  const arcCurve = useMemo(() => {
+    const curve = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(0.3, -2.5, 0),   // bottom — base level
+      new THREE.Vector3(2.8, 0, 0),      // control point (curves outward)
+      new THREE.Vector3(0, 2.2, 0),      // top — top of globe
+    );
+    return curve;
+  }, []);
+
+  const arcGeometry = useMemo(() => {
+    const pts = arcCurve.getPoints(64);
+    const path = new THREE.CatmullRomCurve3(pts);
+    return new THREE.TubeGeometry(path, 64, 0.045, 10, false);
+  }, [arcCurve]);
+
+  return (
+    <group>
+      {/* Curved side arm */}
+      <mesh geometry={arcGeometry} material={bronze} />
+
+      {/* Knob at top of arm */}
+      <mesh position={[0, 2.22, 0]} material={bronze}>
+        <sphereGeometry args={[0.1, 16, 16]} />
+      </mesh>
+
+      {/* Knob at bottom join */}
+      <mesh position={[0.28, -2.45, 0]} material={bronze}>
+        <sphereGeometry args={[0.09, 16, 16]} />
+      </mesh>
+
+      {/* Vertical stem */}
+      <mesh position={[0, -3.35, 0]} material={bronze}>
+        <cylinderGeometry args={[0.045, 0.06, 0.9, 16]} />
+      </mesh>
+
+      {/* Connector knob */}
+      <mesh position={[0, -2.85, 0]} material={bronze}>
+        <cylinderGeometry args={[0.1, 0.1, 0.15, 16]} />
+      </mesh>
+
+      {/* Upper base cylinder */}
+      <mesh position={[0, -3.9, 0]} material={bronze}>
+        <cylinderGeometry args={[0.35, 0.45, 0.12, 32]} />
+      </mesh>
+
+      {/* Lower base disc */}
+      <mesh position={[0, -4.05, 0]} material={bronze}>
+        <cylinderGeometry args={[0.75, 0.85, 0.1, 48]} />
+      </mesh>
+
+      {/* Base rim */}
+      <mesh position={[0, -4.12, 0]} material={bronze}>
+        <torusGeometry args={[0.78, 0.04, 12, 48]} />
+      </mesh>
+    </group>
+  );
+}
+
+// ─── Full scene ───────────────────────────────────────────────────────────────
 
 function Scene({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: number }> }) {
   return (
@@ -114,9 +173,13 @@ function Scene({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: 
       <DistortedSphere mousePos={mousePos} />
       <OrbitRing mousePos={mousePos} />
       <OrbitRing2 />
+      {/* Stand — fixed in world space, globe rotates above it */}
+      <GlobeStand />
     </>
   );
 }
+
+// ─── Export ───────────────────────────────────────────────────────────────────
 
 export default function HeroScene() {
   const mousePos = useRef({ x: 0, y: 0 });
@@ -133,42 +196,14 @@ export default function HeroScene() {
   }, []);
 
   return (
-    <div className="w-full h-full relative flex flex-col items-center">
-      {/* Globe canvas — takes up most space */}
-      <div className="w-full flex-1">
-        <Canvas camera={{ position: [0, 0, 6], fov: 50 }} gl={{ antialias: true, alpha: true }} dpr={[1, 2]}>
-          <Scene mousePos={mousePos} />
-        </Canvas>
-      </div>
-
-      {/* Stand — purely CSS, doesn't touch the 3D globe */}
-      <div className="flex flex-col items-center pointer-events-none select-none" style={{ marginTop: "-32px" }}>
-        {/* Meridian arc ring */}
-        <div className="w-24 h-6 rounded-full border-2 border-warm-400/40 dark:border-warm-400/30"
-          style={{
-            borderRadius: "50%",
-            width: "80px", height: "14px",
-            borderColor: "rgba(196,150,106,0.4)",
-            background: "transparent",
-            boxShadow: "0 2px 8px rgba(196,150,106,0.15)",
-          }} />
-        {/* Vertical rod */}
-        <div style={{
-          width: "3px",
-          height: "48px",
-          background: "linear-gradient(to bottom, #C4966A, #8B5E3C)",
-          borderRadius: "2px",
-          boxShadow: "0 2px 8px rgba(196,150,106,0.25)",
-        }} />
-        {/* Base disc */}
-        <div style={{
-          width: "64px",
-          height: "10px",
-          background: "linear-gradient(135deg, #C4966A, #8B5E3C)",
-          borderRadius: "8px",
-          boxShadow: "0 4px 16px rgba(196,150,106,0.35), 0 1px 0 rgba(255,255,255,0.1) inset",
-        }} />
-      </div>
+    <div className="w-full h-full">
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 50 }}
+        gl={{ antialias: true, alpha: true }}
+        dpr={[1, 2]}
+      >
+        <Scene mousePos={mousePos} />
+      </Canvas>
     </div>
   );
 }
