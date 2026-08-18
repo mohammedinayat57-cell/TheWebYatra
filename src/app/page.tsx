@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Hero from "@/components/sections/Hero";
-import Packages from "@/components/sections/Packages";
+import GetQuote from "@/components/sections/GetQuote";
 import TrustedBy from "@/components/sections/TrustedBy";
 import Services from "@/components/sections/Services";
 import Portfolio from "@/components/sections/Portfolio";
 import Process from "@/components/sections/Process";
 import TechStack from "@/components/sections/TechStack";
 import Testimonials from "@/components/sections/Testimonials";
-import GetQuote from "@/components/sections/GetQuote";
 import CTABanner from "@/components/sections/CTABanner";
 
 export const metadata: Metadata = {
@@ -20,14 +19,13 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <Packages />
+      <GetQuote />
       <TrustedBy />
       <Services />
       <Portfolio />
       <Process />
       <TechStack />
       <Testimonials />
-      <GetQuote />
       <CTABanner />
     </>
   );
