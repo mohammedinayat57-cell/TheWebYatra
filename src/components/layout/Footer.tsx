@@ -5,10 +5,10 @@ import { XIcon, LinkedInIcon, InstagramIcon, GitHubIcon, YouTubeIcon } from "@/c
 
 const footerLinks = {
   company: [
-    { href: "/about", label: "About Us" },
-    { href: "/work", label: "Our Work" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/contact", label: "Contact" },
+    { href: "/about",    label: "About Us" },
+    { href: "/work",     label: "Our Work" },
+    { href: "/#quote",   label: "Get a Quote" },
+    { href: "/contact",  label: "Contact" },
   ],
   services: [
     { href: "/services#web-design", label: "Web Design" },

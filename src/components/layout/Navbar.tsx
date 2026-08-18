@@ -3,16 +3,16 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navLinks = [
-  { href: "/", label: "Home" },
+  { href: "/",         label: "Home" },
   { href: "/services", label: "Services" },
-  { href: "/work", label: "Work" },
-  { href: "/about", label: "About" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/contact", label: "Contact" },
+  { href: "/work",     label: "Work" },
+  { href: "/about",    label: "About" },
+  { href: "/#quote",   label: "Pricing" },
+  { href: "/contact",  label: "Contact" },
 ];
 
 export default function Navbar() {
@@ -86,10 +86,10 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link
-              href="/contact"
+              href="/#quote"
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-warm-400 to-warm-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(196,150,106,0.4)]"
             >
-              Start Your Yatra <ArrowRight size={14} />
+              Get a Quote
             </Link>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -138,10 +138,10 @@ export default function Navbar() {
                 ))}
               </ul>
               <Link
-                href="/contact"
+                href="/#quote"
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-warm-400 to-warm-700"
               >
-                Start Your Yatra <ArrowRight size={14} />
+                Get a Quote
               </Link>
             </motion.div>
           </motion.div>

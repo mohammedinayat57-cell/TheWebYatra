@@ -47,8 +47,7 @@ export default function Hero() {
               <p className="text-stone-500 dark:text-stone-500 text-base font-medium mb-2 tracking-wide">
                 Hi, I&apos;m Mohd Inayat 👋
               </p>
-              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold text-stone-900 dark:text-cream-100 leading-[1.1] tracking-tight mb-2">
-                Full-Stack{" "}
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold text-stone-900 dark:text-cream-100 leading-[1.1] tracking-tight mb-2">                Full-Stack{" "}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-warm-500 via-warm-600 to-warm-800 dark:from-warm-400 dark:via-warm-500 dark:to-warm-600">
                   Developer
                 </span>

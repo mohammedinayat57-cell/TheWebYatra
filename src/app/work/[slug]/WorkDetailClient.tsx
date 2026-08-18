@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Tag } from "lucide-react";
+import { ArrowLeft, ArrowRight, Tag, MessageCircle } from "lucide-react";
 import type { Project } from "@/types";
 import { projects } from "@/lib/data";
 
@@ -156,9 +156,10 @@ export default function WorkDetailClient({ project }: Props) {
                 </div>
               </div>
 
-              <Link href="/contact"
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-semibold text-white text-sm bg-gradient-to-r from-warm-400 to-warm-700 hover:shadow-[0_4px_20px_rgba(196,150,106,0.30)] transition-all">
-                Start a Similar Project <ArrowRight size={14} />
+              <Link href="/#quote"
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-semibold text-white text-sm transition-all hover:shadow-[0_4px_20px_rgba(37,211,102,0.30)]"
+                style={{ background: "linear-gradient(135deg,#25D366,#128C7E)" }}>
+                <MessageCircle size={14} /> Get a Quote <ArrowRight size={14} />
               </Link>
             </div>
           </div>
