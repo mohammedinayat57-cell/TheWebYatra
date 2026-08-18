@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       `*Message:*\n${message}`
     );
 
-    const whatsappUrl = `https://wa.me/919220612315?text=${wa}`;
+    const whatsappUrl = `https://wa.me/918920291416?text=${wa}`;
 
     return NextResponse.json({ success: true, whatsappUrl });
   } catch {

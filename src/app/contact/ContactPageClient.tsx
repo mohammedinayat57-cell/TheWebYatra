@@ -7,9 +7,9 @@ const serviceOptions = ["Web Design","Web Development","E-Commerce","SEO Optimiz
 const budgetOptions = ["< ₹25,000","₹25,000 – ₹50,000","₹50,000 – ₹1,20,000","₹1,20,000 – ₹2,50,000","₹2,50,000+","Not sure yet"];
 
 const contactInfo = [
-  { icon: MessageCircle, label: "WhatsApp",    value: "+91 92206 12315",             href: "https://wa.me/919220612315" },
+  { icon: MessageCircle, label: "WhatsApp",    value: "+91 8920291416",             href: "https://wa.me/918920291416" },
   { icon: Mail,          label: "Email",       value: "mohammedinayat12@gmail.com",  href: "mailto:mohammedinayat12@gmail.com" },
-  { icon: Phone,         label: "Call",        value: "+91 92206 12315",             href: "tel:+919220612315" },
+  { icon: Phone,         label: "Call",        value: "+91 8920291416",             href: "tel:+918920291416" },
   { icon: MapPin,        label: "Based In",    value: "Delhi, India · Remote Worldwide", href: null },
   { icon: Clock,         label: "Response",    value: "Within 2–4 hours",           href: null },
 ];
@@ -35,7 +35,7 @@ export default function ContactPageClient() {
       `*Budget:* ${form.budget || "—"}\n\n` +
       `*Message:*\n${form.message}`;
 
-    window.open(`https://wa.me/919220612315?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/918920291416?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   const inp = "w-full px-4 py-3 rounded-xl bg-cream-100 dark:bg-dark-100 border border-cream-400 dark:border-dark-50 text-stone-900 dark:text-cream-100 text-sm placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:outline-none focus:border-warm-400/70 transition-colors";
@@ -139,7 +139,7 @@ export default function ContactPageClient() {
             {/* Sidebar */}
             <div className="space-y-5">
               {/* Quick WhatsApp button */}
-              <motion.a href="https://wa.me/919220612315" target="_blank" rel="noopener noreferrer"
+              <motion.a href="https://wa.me/918920291416" target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
                 className="flex items-center gap-4 p-5 rounded-2xl border-2 border-[#25D366]/40 bg-[#25D366]/5 dark:bg-[#25D366]/8 hover:border-[#25D366]/70 hover:bg-[#25D366]/10 transition-all group">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 shadow-md"
@@ -150,7 +150,7 @@ export default function ContactPageClient() {
                   <div className="font-semibold text-stone-900 dark:text-cream-100 group-hover:text-[#128C7E] dark:group-hover:text-[#25D366] transition-colors">
                     Chat on WhatsApp
                   </div>
-                  <div className="text-stone-500 dark:text-stone-500 text-sm">+91 92206 12315 · Usually replies in 2h</div>
+                  <div className="text-stone-500 dark:text-stone-500 text-sm">+91 8920291416 · Usually replies in 2h</div>
                 </div>
               </motion.a>
 

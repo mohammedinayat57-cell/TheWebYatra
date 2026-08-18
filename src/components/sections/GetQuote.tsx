@@ -122,7 +122,7 @@ export default function GetQuote() {
       doc.text("TheWebYatra", 14, 12);
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text("Your Digital Journey  |  thewebyatra.com  |  +91 92206 12315", 14, 21);
+      doc.text("Your Digital Journey  |  thewebyatra.com  |  +91 8920291416", 14, 21);
 
       // Title
       doc.setTextColor(28, 26, 24);
@@ -249,7 +249,7 @@ export default function GetQuote() {
       doc.setTextColor(156, 136, 120);
       doc.text("Final price may vary depending on exact requirements. This is a non-binding estimate.", 14, y);
       y += 5;
-      doc.text("TheWebYatra  |  mohammedinayat12@gmail.com  |  +91 92206 12315", 14, y);
+      doc.text("TheWebYatra  |  mohammedinayat12@gmail.com  |  +91 8920291416", 14, y);
 
       doc.save(`TheWebYatra_Quote_${form.name.replace(/\s+/g,"_") || "Client"}.pdf`);
     } catch (err) {
@@ -276,7 +276,7 @@ export default function GetQuote() {
       `📄 PDF quote has been downloaded.`,
     ].filter(Boolean).join("\n");
 
-    window.open(`https://wa.me/919220612315?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/918920291416?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   // ── Styles ─────────────────────────────────────────────────────────────────
@@ -584,7 +584,7 @@ export default function GetQuote() {
                   </button>
 
                   {/* Secondary — talk directly */}
-                  <a href="https://wa.me/919220612315" target="_blank" rel="noopener noreferrer"
+                  <a href="https://wa.me/918920291416" target="_blank" rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full py-3 rounded-full font-semibold text-warm-700 dark:text-warm-400 text-sm border border-warm-400/40 bg-cream-100 dark:bg-dark-100 hover:bg-cream-200 dark:hover:bg-dark-50 transition-all">
                     <MessageCircle size={15} /> Talk on WhatsApp
                   </a>

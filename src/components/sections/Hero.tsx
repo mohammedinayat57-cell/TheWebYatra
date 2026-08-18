@@ -15,34 +15,29 @@ const fadeUp = {
   }),
 };
 
-const stack = ["React", "Next.js", "Node.js", "Java", "MongoDB", "TypeScript"];
-
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-cream-100 dark:bg-dark-400">
       <div className="absolute inset-0 animated-grid" />
-
-      {/* Warm blobs */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-warm-400/8 dark:bg-warm-400/5 rounded-full blur-[140px] pointer-events-none animate-float" />
       <div className="absolute bottom-1/3 right-1/4 w-[350px] h-[350px] bg-amber-300/8 dark:bg-amber-600/4 rounded-full blur-[120px] pointer-events-none animate-float" style={{ animationDelay: "2s" }} />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center min-h-[82vh]">
 
-          {/* ── Left content ── */}
+          {/* Left */}
           <div className="order-2 lg:order-1">
-
-            {/* Available badge */}
+            {/* Badge */}
             <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-warm-400/30 bg-warm-400/10 text-warm-700 dark:text-warm-400 text-sm font-medium mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              🟢 Available for New Projects
+              Available for New Projects
             </motion.div>
 
-            {/* Heading + role */}
+            {/* Heading */}
             <motion.div custom={1} initial="hidden" animate="visible" variants={fadeUp}>
               <p className="text-stone-500 dark:text-stone-500 text-base font-medium mb-2 tracking-wide">
                 TheWebYatra — Your Digital Journey Starts Here
@@ -57,25 +52,16 @@ export default function Hero() {
               </h2>
             </motion.div>
 
+            {/* Sub */}
             <motion.p custom={2} initial="hidden" animate="visible" variants={fadeUp}
-              className="text-stone-600 dark:text-stone-400 text-lg leading-relaxed mb-6 max-w-lg">
-              We craft <strong className="text-stone-800 dark:text-cream-200 font-semibold">high-performance websites</strong>, e-commerce stores, mobile apps and AI-integrated digital products that grow your business. MERN Stack · Next.js · Java · Full-Stack.
+              className="text-stone-600 dark:text-stone-400 text-lg leading-relaxed mb-8 max-w-lg">
+              We craft <strong className="text-stone-800 dark:text-cream-200 font-semibold">high-performance websites</strong>, e-commerce stores, mobile apps and AI-integrated digital products that grow your business.
             </motion.p>
 
-            {/* Tech stack pills */}
-            <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}
-              className="flex flex-wrap gap-2 mb-8">
-              {stack.map((s) => (
-                <span key={s} className="px-3 py-1 rounded-full text-xs font-semibold border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 text-stone-600 dark:text-stone-400">
-                  {s}
-                </span>
-              ))}
-            </motion.div>
-
             {/* CTAs */}
-            <motion.div custom={4} initial="hidden" animate="visible" variants={fadeUp}
+            <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}
               className="flex flex-wrap gap-4 mb-10">
-              <Link href="/contact#quote"
+              <Link href="/#quote"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-bold text-white text-base bg-gradient-to-r from-warm-400 to-warm-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_28px_rgba(196,150,106,0.45)]">
                 <Briefcase size={16} /> Get a Quote
               </Link>
@@ -85,8 +71,8 @@ export default function Hero() {
               </Link>
             </motion.div>
 
-            {/* Social + stats row */}
-            <motion.div custom={5} initial="hidden" animate="visible" variants={fadeUp}
+            {/* Socials + stats */}
+            <motion.div custom={4} initial="hidden" animate="visible" variants={fadeUp}
               className="flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-3">
                 <a href="https://github.com/inayatshaykh" target="_blank" rel="noopener noreferrer"
@@ -112,7 +98,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* ── Right: 3D ── */}
+          {/* Right: 3D */}
           <motion.div className="order-1 lg:order-2 h-[400px] sm:h-[480px] lg:h-[580px] relative"
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.0, delay: 0.3, ease: "easeOut" }}>
@@ -124,14 +110,14 @@ export default function Hero() {
               <HeroScene />
             </Suspense>
 
-            {/* Floating: project launched */}
+            {/* Floating: live project */}
             <motion.div
               className="absolute top-8 -left-4 sm:left-4 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg z-10"
               animate={{ y: [0, -8, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-warm-400 to-warm-700 flex items-center justify-center text-lg shadow-md">🚀</div>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-warm-400 to-warm-700 flex items-center justify-center text-lg shadow-md">🍛</div>
               <div>
                 <div className="text-stone-900 dark:text-cream-200 text-xs font-semibold">Live Project</div>
-                <div className="text-stone-500 dark:text-stone-500 text-[10px]">almishk.in · E-Commerce</div>
+                <div className="text-stone-500 dark:text-stone-500 text-[10px]">panchaiyatcafe.in · Restaurant</div>
               </div>
             </motion.div>
 
@@ -140,20 +126,18 @@ export default function Hero() {
               className="absolute bottom-20 -right-2 sm:right-4 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-4 py-3 z-10 shadow-lg"
               animate={{ y: [0, 8, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
               <div className="flex items-center gap-1 mb-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={10} fill="currentColor" className="text-amber-500" />
-                ))}
+                {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="currentColor" className="text-amber-500" />)}
               </div>
               <div className="font-display text-stone-900 dark:text-cream-200 text-lg font-bold">5.0</div>
               <div className="text-stone-500 dark:text-stone-500 text-[10px]">Client Rating</div>
             </motion.div>
 
-            {/* Floating: tech badge */}
+            {/* Floating: tech */}
             <motion.div
               className="absolute top-1/2 -translate-y-1/2 -right-2 sm:right-2 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-3 py-2 z-10 shadow-lg"
               animate={{ y: [0, -6, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
               <div className="text-stone-500 dark:text-stone-600 text-[9px] mb-1 uppercase tracking-wider">Built With</div>
-              <div className="text-stone-900 dark:text-cream-200 text-xs font-bold">MERN + Java</div>
+              <div className="text-stone-900 dark:text-cream-200 text-xs font-bold">MERN + Next.js</div>
             </motion.div>
           </motion.div>
         </div>

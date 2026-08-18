@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+                                          import type { Metadata } from "next";
 import Hero from "@/components/sections/Hero";
 import GetQuote from "@/components/sections/GetQuote";
 import TrustedBy from "@/components/sections/TrustedBy";

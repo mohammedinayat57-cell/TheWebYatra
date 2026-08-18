@@ -58,8 +58,8 @@ export default function Footer() {
               <a href="mailto:mohammedinayat12@gmail.com" className="flex items-center gap-2 text-stone-400 hover:text-warm-400 text-sm transition-colors">
                 <Mail size={14} className="text-warm-400" />mohammedinayat12@gmail.com
               </a>
-              <a href="tel:+919999999999" className="flex items-center gap-2 text-stone-400 hover:text-warm-400 text-sm transition-colors">
-                <Phone size={14} className="text-warm-400" />+91 99999 99999
+              <a href="tel:+918920291416" className="flex items-center gap-2 text-stone-400 hover:text-warm-400 text-sm transition-colors">
+                <Phone size={14} className="text-warm-400" />+91 89202 91416
               </a>
               <div className="flex items-center gap-2 text-stone-400 text-sm">
                 <MapPin size={14} className="text-warm-400 flex-shrink-0" />Delhi, India · Remote Worldwide
@@ -111,7 +111,7 @@ export default function Footer() {
         </div>
 
         <div className="py-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-stone-500 text-sm">© 2025 TheWebYatra. All rights reserved.</p>
+          <p className="text-stone-500 text-sm">© 2026 TheWebYatra. All rights reserved.</p>
           <div className="flex items-center gap-5">
             {footerLinks.legal.map((l) => (
               <Link key={l.href} href={l.href} className="text-stone-500 hover:text-stone-300 text-xs transition-colors">{l.label}</Link>
