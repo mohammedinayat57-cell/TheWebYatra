@@ -1,87 +1,146 @@
 "use client";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { MessageCircle, Check, Zap, Clock, Shield, Star } from "lucide-react";
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, Check, ChevronRight, ChevronLeft, Zap, Clock, Shield, Star } from "lucide-react";
 
-// ── Packages ──────────────────────────────────────────────────────────────
-const packages = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: "₹49,999",
-    usd: "~ $588",
-    period: "one-time",
-    desc: "Perfect for small businesses launching their digital presence.",
-    features: ["5-Page Custom Website","Mobile Responsive","Basic SEO","Contact Form","2 Months Support","Google Analytics","SSL Certificate","Source Code"],
-    highlighted: false,
-  },
-  {
-    id: "growth",
-    name: "Growth",
-    price: "₹1,19,999",
-    usd: "~ $1,412",
-    period: "one-time",
-    desc: "For growing businesses ready to scale with a powerful platform.",
-    features: ["Up to 20 Pages","Custom UI/UX Design","Advanced SEO","CMS Integration","E-Commerce Ready","Performance Optimization","4 Months Support","Analytics Dashboard","Social Media Integration","Priority Support"],
-    highlighted: true,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: "Custom",
-    usd: "",
-    period: "project",
-    desc: "Full-scale solutions for enterprise-level requirements.",
-    features: ["Unlimited Pages","Custom Web Application","Full Brand Identity","Advanced E-Commerce","SEO + Content Strategy","Mobile App Development","AI Integration","Dedicated PM","12 Months Support","SLA Guarantee","Custom Integrations"],
-    highlighted: false,
-  },
+// ─────────────────────────────────────────────
+// Data definitions
+// ─────────────────────────────────────────────
+
+const STEP_LABELS = ["Project", "Pages", "Features", "Timeline", "Details", "Summary"];
+
+const PROJECT_TYPES = [
+  { id: "landing",     emoji: "🖥",  label: "Landing Page",              sub: "Single page, conversion-focused",              base: 15000 },
+  { id: "portfolio",   emoji: "📖",  label: "Portfolio / Brochure",       sub: "Multi-page brand or personal site",             base: 25000 },
+  { id: "ecommerce",   emoji: "🛒",  label: "E-Commerce Store",           sub: "Products, cart, payment gateway",               base: 45000 },
+  { id: "webapp",      emoji: "⚙️",  label: "Web Application",            sub: "Custom full-stack app with auth",               base: 85000 },
+  { id: "restaurant",  emoji: "🍽",  label: "Restaurant / Menu Site",     sub: "Menu, ordering, location info",                 base: 20000 },
+  { id: "travel",      emoji: "✈️",  label: "Travel Agency / Tourism",    sub: "Packages, bookings, destinations",              base: 35000 },
+] as const;
+
+const PAGES_OPTIONS = [
+  { id: "1-3",  label: "1–3 pages",  extra: 0 },
+  { id: "4-7",  label: "4–7 pages",  extra: 8000 },
+  { id: "8-15", label: "8–15 pages", extra: 18000 },
+  { id: "15+",  label: "15+ pages",  extra: 35000 },
+] as const;
+
+interface Feature {
+  id: string;
+  label: string;
+  cost: number;
+  included: boolean;
+}
+
+const FEATURES: Feature[] = [
+  { id: "responsive",  label: "Mobile Responsive Design",       cost: 0,     included: true  },
+  { id: "basic-seo",   label: "Basic SEO Setup",                cost: 0,     included: true  },
+  { id: "contact",     label: "Contact Form",                   cost: 0,     included: true  },
+  { id: "ssl",         label: "SSL Certificate",                cost: 0,     included: true  },
+  { id: "adv-seo",     label: "Advanced SEO Package",           cost: 12000, included: false },
+  { id: "whatsapp",    label: "WhatsApp Integration",           cost: 5000,  included: false },
+  { id: "payment",     label: "Payment Gateway",                cost: 15000, included: false },
+  { id: "cms",         label: "CMS / Admin Panel",              cost: 20000, included: false },
+  { id: "livechat",    label: "Live Chat Widget",               cost: 6000,  included: false },
+  { id: "blog",        label: "Blog System",                    cost: 10000, included: false },
+  { id: "social",      label: "Social Media Integration",       cost: 8000,  included: false },
+  { id: "analytics",   label: "Google Analytics Dashboard",     cost: 7000,  included: false },
+  { id: "animations",  label: "Custom Animations",              cost: 12000, included: false },
+  { id: "multilang",   label: "Multi-language Support",         cost: 18000, included: false },
+  { id: "auth",        label: "User Authentication / Login",    cost: 22000, included: false },
+  { id: "email-mkt",   label: "Email Marketing Integration",    cost: 9000,  included: false },
 ];
 
-const timelines = ["ASAP (Rush)","1–2 Weeks","1 Month","2–3 Months","Flexible"];
-const services  = ["Web Design","Web Development","E-Commerce Store","SEO & Growth","Mobile App","Full Digital Package","AI Integration","Other"];
-
-// ── Perks ──────────────────────────────────────────────────────────────────
-const perks = [
-  { icon: Zap,     title: "Fast Delivery",   desc: "Most projects ship in 2–4 weeks" },
-  { icon: Clock,   title: "Quick Reply",     desc: "Response within 4 hours" },
-  { icon: Shield,  title: "Clean Code",      desc: "Documented & yours to keep" },
-  { icon: Star,    title: "5★ Rated",        desc: "Consistent quality, every time" },
+const TIMELINE_OPTIONS = [
+  { id: "rush",     label: "ASAP / Rush",     sub: "Within 1 week",   modifier: 15000  },
+  { id: "2-3w",     label: "2–3 Weeks",        sub: "Standard pace",   modifier: 0      },
+  { id: "1month",   label: "1 Month",          sub: "Relaxed delivery",modifier: -3000  },
+  { id: "2months",  label: "2+ Months",        sub: "Flexible",        modifier: -6000  },
 ];
 
-// ── Component ──────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Helper
+// ─────────────────────────────────────────────
+const fmt = (n: number) =>
+  "₹" + Math.abs(n).toLocaleString("en-IN");
+
+// ─────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────
 export default function GetQuote() {
-  const [selected, setSelected] = useState("growth");
-  const [form, setForm] = useState({ name:"", phone:"", email:"", service:"", timeline:"", description:"" });
-  const [sent, setSent]   = useState(false);
-  const [err,  setErr]    = useState("");
+  const [step, setStep] = useState(0);
+  const [projectId,  setProjectId]  = useState<string>("");
+  const [pagesId,    setPagesId]    = useState<string>("");
+  const [features,   setFeatures]   = useState<string[]>(() =>
+    FEATURES.filter(f => f.included).map(f => f.id)
+  );
+  const [timelineId, setTimelineId] = useState<string>("");
+  const [form, setForm] = useState({ name: "", phone: "", email: "", description: "" });
+  const [errors, setErrors] = useState<Partial<typeof form>>({});
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) =>
-    setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+  // ── Derived totals ──────────────────────────
+  const projectType  = PROJECT_TYPES.find(p => p.id === projectId);
+  const pagesOption  = PAGES_OPTIONS.find(p => p.id === pagesId);
+  const timelineOpt  = TIMELINE_OPTIONS.find(t => t.id === timelineId);
+  const featureTotal = FEATURES.filter(f => features.includes(f.id) && f.cost > 0)
+                                .reduce((s, f) => s + f.cost, 0);
+  const basePrice    = projectType?.base ?? 0;
+  const pagesExtra   = pagesOption?.extra ?? 0;
+  const timelineMod  = timelineOpt?.modifier ?? 0;
+  const totalPrice   = basePrice + pagesExtra + featureTotal + timelineMod;
+  const usdPrice     = Math.round(totalPrice / 85);
 
-  const pkg = packages.find(p => p.id === selected)!;
-
-  const openWhatsApp = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErr("");
-    if (!form.name.trim() || !form.phone.trim() || !form.description.trim()) {
-      setErr("Please fill Name, Phone and Project Description.");
-      return;
+  // ── Step validation ─────────────────────────
+  const canProceed = useCallback(() => {
+    if (step === 0) return !!projectId;
+    if (step === 1) return !!pagesId;
+    if (step === 3) return !!timelineId;
+    if (step === 4) {
+      const e: Partial<typeof form> = {};
+      if (!form.name.trim())  e.name  = "Name is required";
+      if (!form.phone.trim()) e.phone = "Phone / WhatsApp is required";
+      setErrors(e);
+      return Object.keys(e).length === 0;
     }
-    const text =
-      `*Quote Request — TheWebYatra* 🚀\n\n` +
-      `*Package:* ${pkg.name} (${pkg.price})\n` +
-      `*Name:* ${form.name}\n` +
-      `*Phone:* ${form.phone}\n` +
-      `*Email:* ${form.email || "—"}\n` +
-      `*Service:* ${form.service || "—"}\n` +
-      `*Timeline:* ${form.timeline || "—"}\n\n` +
-      `*Project Details:*\n${form.description}`;
+    return true;
+  }, [step, projectId, pagesId, timelineId, form]);
 
-    window.open(`https://wa.me/919220612315?text=${encodeURIComponent(text)}`, "_blank");
-    setSent(true);
-    setForm({ name:"",phone:"",email:"",service:"",timeline:"",description:"" });
+  const next = () => {
+    if (canProceed()) setStep(s => Math.min(s + 1, 5));
+  };
+  const back = () => setStep(s => Math.max(s - 1, 0));
+
+  const toggleFeature = (id: string) => {
+    setFeatures(prev =>
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
   };
 
+  // ── WhatsApp message ────────────────────────
+  const sendWhatsApp = () => {
+    const selectedFeatureLabels = FEATURES.filter(f => features.includes(f.id)).map(f => f.label);
+    const lines = [
+      `*Quote Request — TheWebYatra* 🚀`,
+      ``,
+      `*Project Type:* ${projectType?.label ?? "—"}  (Base: ${fmt(basePrice)})`,
+      `*Pages:* ${pagesOption?.label ?? "—"}  (+${fmt(pagesExtra)})`,
+      `*Timeline:* ${timelineOpt?.label ?? "—"}  (${timelineMod >= 0 ? "+" : ""}${fmt(timelineMod)})`,
+      ``,
+      `*Features Selected:*`,
+      ...selectedFeatureLabels.map(l => `  • ${l}`),
+      ``,
+      `*💰 Total Estimate:* ${fmt(totalPrice)} (~ $${usdPrice} USD)`,
+      ``,
+      `*Name:* ${form.name}`,
+      `*Phone:* ${form.phone}`,
+      `*Email:* ${form.email || "—"}`,
+      form.description ? `\n*Project Details:*\n${form.description}` : "",
+    ].join("\n");
+
+    window.open(`https://wa.me/919220612315?text=${encodeURIComponent(lines)}`, "_blank");
+  };
+
+  // ── Shared styles ───────────────────────────
   const inp = "w-full px-4 py-3 rounded-xl bg-cream-100 dark:bg-dark-100 border border-cream-400 dark:border-dark-50 text-stone-900 dark:text-cream-100 text-sm placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:outline-none focus:border-warm-400/60 transition-colors";
   const lbl = "block text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wider mb-1.5";
 
@@ -89,235 +148,403 @@ export default function GetQuote() {
     <section id="quote" className="relative py-16 md:py-24 bg-cream-50 dark:bg-dark-300 overflow-hidden">
       <div className="absolute inset-0 animated-grid opacity-40 pointer-events-none" />
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Heading ── */}
-        <motion.div className="text-center mb-12"
-          initial={{ opacity:0, y:30 }} whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }} transition={{ duration:0.6 }}>
+        <motion.div className="text-center mb-10"
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-warm-400/30 bg-warm-400/10 text-warm-700 dark:text-warm-400 text-sm font-medium mb-5">
-            <MessageCircle size={13} /> Get a Free Quote via WhatsApp
+            <MessageCircle size={13} /> Get a Free Quote
           </div>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-stone-900 dark:text-cream-100 mb-4 leading-tight">
-            Pick a Package &{" "}
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-stone-900 dark:text-cream-100 mb-4 leading-tight">
+            Build Your{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-warm-500 via-warm-600 to-warm-800 dark:from-warm-400 dark:via-warm-500 dark:to-warm-600">
-              Let&apos;s Talk
+              Custom Quote
             </span>
           </h2>
-          <p className="text-stone-600 dark:text-stone-400 text-base md:text-lg max-w-2xl mx-auto">
-            Choose a package, fill your details and hit Send — WhatsApp opens with everything pre-filled. I reply within 4 hours.
+          <p className="text-stone-500 dark:text-stone-400 text-base max-w-xl mx-auto">
+            Answer 5 quick questions and get an instant price estimate — then send it straight to WhatsApp.
           </p>
         </motion.div>
 
-        {/* ── Package selector ── */}
-        <motion.div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"
-          initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }} transition={{ duration:0.5, delay:0.1 }}>
-          {packages.map((p) => (
-            <button key={p.id} onClick={() => setSelected(p.id)}
-              className={`relative text-left p-5 rounded-2xl border transition-all duration-200 ${
-                selected === p.id
-                  ? "border-warm-400/70 bg-gradient-to-b from-warm-400/10 to-white dark:to-dark-200 shadow-[0_4px_24px_rgba(196,150,106,0.18)]"
-                  : "border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 hover:border-warm-400/40"
-              }`}>
-              {p.highlighted && selected !== p.id && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-warm-400 to-warm-700 whitespace-nowrap">
-                  Most Popular
+        {/* ── Step progress bar ── */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between relative">
+            {/* connecting line */}
+            <div className="absolute top-4 left-0 right-0 h-0.5 bg-cream-400 dark:bg-dark-50 mx-8 z-0" />
+            <div
+              className="absolute top-4 left-0 h-0.5 bg-gradient-to-r from-warm-400 to-warm-600 z-0 transition-all duration-500"
+              style={{ width: `calc(${(step / (STEP_LABELS.length - 1)) * 100}% - 2rem)`, marginLeft: "2rem" }}
+            />
+            {STEP_LABELS.map((label, i) => (
+              <div key={label} className="relative z-10 flex flex-col items-center gap-1.5">
+                <button
+                  onClick={() => i < step && setStep(i)}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border-2 ${
+                    i < step
+                      ? "bg-gradient-to-br from-warm-400 to-warm-600 border-warm-400 text-white cursor-pointer hover:scale-110"
+                      : i === step
+                      ? "bg-gradient-to-br from-warm-400 to-warm-600 border-warm-500 text-white shadow-[0_0_0_3px_rgba(196,150,106,0.25)]"
+                      : "bg-cream-100 dark:bg-dark-200 border-cream-400 dark:border-dark-50 text-stone-400 dark:text-stone-600 cursor-default"
+                  }`}>
+                  {i < step ? <Check size={12} /> : i + 1}
+                </button>
+                <span className={`text-[10px] font-semibold hidden sm:block transition-colors ${
+                  i <= step ? "text-warm-600 dark:text-warm-400" : "text-stone-400 dark:text-stone-600"
+                }`}>
+                  {label}
                 </span>
-              )}
-              {selected === p.id && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-warm-400 to-warm-700 whitespace-nowrap flex items-center gap-1">
-                  <Check size={9} /> Selected
-                </span>
-              )}
-              <div className="font-display font-bold text-stone-900 dark:text-cream-100 text-base mb-0.5">{p.name}</div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-display text-2xl font-extrabold text-stone-900 dark:text-cream-100">{p.price}</span>
-                {p.price !== "Custom" && <span className="text-stone-400 text-xs">/{p.period}</span>}
-              </div>
-              {p.usd && <div className="text-stone-400 dark:text-stone-600 text-[11px] mt-0.5">{p.usd} usd</div>}
-              <p className="text-stone-500 dark:text-stone-500 text-xs mt-2 leading-relaxed">{p.desc}</p>
-            </button>
-          ))}
-        </motion.div>
-
-        {/* ── Selected package features ── */}
-        <motion.div
-          key={selected}
-          initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
-          transition={{ duration:0.3 }}
-          className="mb-10 p-5 rounded-2xl border border-warm-400/25 bg-white dark:bg-dark-200">
-          <p className="text-xs font-semibold text-stone-500 dark:text-stone-500 uppercase tracking-wider mb-3">
-            {pkg.name} plan includes:
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-2">
-            {pkg.features.map((f) => (
-              <div key={f} className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
-                <Check size={12} className="text-warm-500 dark:text-warm-400 flex-shrink-0" />
-                {f}
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* ── Main form + sidebar ── */}
-        <div className="grid lg:grid-cols-[1fr_320px] gap-8">
-
-          {/* Form */}
-          <motion.div initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
-            viewport={{ once:true }} transition={{ duration:0.5 }}
-            className="rounded-3xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 p-6 md:p-8">
-
-            {sent ? (
-              <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }}
-                className="flex flex-col items-center text-center py-12">
-                <div className="text-5xl mb-4">✅</div>
-                <h3 className="font-display text-2xl font-bold text-stone-900 dark:text-cream-100 mb-2">WhatsApp Opened!</h3>
-                <p className="text-stone-500 dark:text-stone-500 max-w-sm text-sm leading-relaxed">
-                  Your quote request was pre-filled in WhatsApp. I&apos;ll reply within 4 hours. Looking forward to working with you! 🚀
-                </p>
-                <button onClick={() => setSent(false)}
-                  className="mt-6 px-6 py-2.5 rounded-full text-sm font-semibold text-warm-700 dark:text-warm-400 border border-warm-400/40 bg-cream-100 dark:bg-dark-100 hover:bg-cream-200 dark:hover:bg-dark-50 transition-all">
-                  Submit Another
-                </button>
-              </motion.div>
-            ) : (
-              <form onSubmit={openWhatsApp} noValidate className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={lbl}>Your Name *</label>
-                    <input name="name" type="text" required placeholder="Mohd Inayat" value={form.name} onChange={onChange} className={inp} />
-                  </div>
-                  <div>
-                    <label className={lbl}>WhatsApp / Phone *</label>
-                    <input name="phone" type="tel" required placeholder="+91 98765 43210" value={form.phone} onChange={onChange} className={inp} />
-                  </div>
-                </div>
-
-                <div>
-                  <label className={lbl}>Email Address</label>
-                  <input name="email" type="email" placeholder="you@email.com (optional)" value={form.email} onChange={onChange} className={inp} />
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={lbl}>Specific Service</label>
-                    <select name="service" value={form.service} onChange={onChange} className={`${inp} cursor-pointer`}>
-                      <option value="">Any / Same as package</option>
-                      {services.map(s => <option key={s} value={s} className="bg-white dark:bg-dark-200">{s}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className={lbl}>Timeline</label>
-                    <select name="timeline" value={form.timeline} onChange={onChange} className={`${inp} cursor-pointer`}>
-                      <option value="">When do you need it?</option>
-                      {timelines.map(t => <option key={t} value={t} className="bg-white dark:bg-dark-200">{t}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className={lbl}>Project Details *</label>
-                  <textarea name="description" required rows={4}
-                    placeholder="Describe your project — goals, references, any specific requirements..."
-                    value={form.description} onChange={onChange} className={`${inp} resize-none`} />
-                </div>
-
-                {err && (
-                  <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-700/30 text-red-600 dark:text-red-400 text-sm">
-                    {err}
-                  </div>
-                )}
-
-                {/* Selected package summary */}
-                <div className="flex items-center justify-between p-4 rounded-xl bg-warm-400/8 dark:bg-warm-400/6 border border-warm-400/25">
-                  <div>
-                    <div className="text-xs text-stone-500 dark:text-stone-500">Selected Package</div>
-                    <div className="font-semibold text-stone-900 dark:text-cream-100 text-sm">{pkg.name} · {pkg.price}</div>
-                  </div>
-                  <button type="button" onClick={() => document.getElementById("quote")?.scrollIntoView({ behavior:"smooth" })}
-                    className="text-xs text-warm-600 dark:text-warm-400 underline underline-offset-2">Change</button>
-                </div>
-
-                <button type="submit"
-                  className="flex items-center justify-center gap-2.5 w-full py-4 rounded-full font-bold text-white text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(37,211,102,0.38)]"
-                  style={{ background: "linear-gradient(135deg, #25D366, #128C7E)" }}>
-                  <MessageCircle size={18} />
-                  Send Quote on WhatsApp
-                </button>
-
-                <p className="text-stone-400 dark:text-stone-600 text-xs text-center">
-                  Opens WhatsApp with your details pre-filled · Free quote · No commitment
-                </p>
-              </form>
-            )}
+        {/* ── Live price chip ── */}
+        {totalPrice > 0 && (
+          <motion.div
+            className="flex items-center justify-center gap-2 mb-6"
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-warm-400/10 border border-warm-400/30 text-stone-800 dark:text-cream-100">
+              <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">Estimate:</span>
+              <span className="font-display font-bold text-lg text-warm-600 dark:text-warm-400">{fmt(totalPrice)}</span>
+              <span className="text-xs text-stone-400 dark:text-stone-500">~ ${usdPrice} USD</span>
+            </div>
           </motion.div>
+        )}
 
-          {/* Sidebar */}
-          <div className="space-y-4">
-            {/* Direct WhatsApp */}
-            <motion.a href="https://wa.me/919220612315" target="_blank" rel="noopener noreferrer"
-              initial={{ opacity:0, x:20 }} whileInView={{ opacity:1, x:0 }}
-              viewport={{ once:true }} transition={{ duration:0.5 }}
-              className="flex items-center gap-4 p-5 rounded-2xl border-2 border-[#25D366]/40 bg-[#25D366]/5 dark:bg-[#25D366]/6 hover:border-[#25D366]/70 hover:bg-[#25D366]/10 transition-all group">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 shadow-md"
-                style={{ background: "linear-gradient(135deg,#25D366,#128C7E)" }}>
-                <MessageCircle size={22} className="text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-stone-900 dark:text-cream-100 group-hover:text-[#128C7E] dark:group-hover:text-[#25D366] transition-colors text-sm">
-                  Chat Directly on WhatsApp
+        {/* ── Step card ── */}
+        <div className="rounded-3xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 overflow-hidden shadow-sm">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -24 }}
+              transition={{ duration: 0.25 }}
+              className="p-6 md:p-8">
+
+              {/* ── STEP 0 – Project Type ── */}
+              {step === 0 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">What type of project do you need?</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">Pick the option that best describes your project.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {PROJECT_TYPES.map(pt => (
+                      <button key={pt.id} onClick={() => setProjectId(pt.id)}
+                        className={`flex items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 ${
+                          projectId === pt.id
+                            ? "border-warm-400/70 bg-warm-400/8 dark:bg-warm-400/6 shadow-[0_2px_12px_rgba(196,150,106,0.15)]"
+                            : "border-cream-400 dark:border-dark-50 hover:border-warm-400/40 hover:bg-cream-100 dark:hover:bg-dark-100"
+                        }`}>
+                        <span className="text-2xl flex-shrink-0 mt-0.5">{pt.emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`font-semibold text-sm ${projectId === pt.id ? "text-warm-700 dark:text-warm-400" : "text-stone-900 dark:text-cream-100"}`}>
+                              {pt.label}
+                            </span>
+                            {projectId === pt.id && <Check size={14} className="text-warm-500 flex-shrink-0" />}
+                          </div>
+                          <span className="text-stone-500 dark:text-stone-400 text-xs">{pt.sub}</span>
+                          <div className="text-warm-600 dark:text-warm-400 text-xs font-semibold mt-1">From {fmt(pt.base)}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-stone-500 dark:text-stone-500 text-xs mt-0.5">+91 92206 12315 · Replies in ~2 hrs</div>
-              </div>
-            </motion.a>
+              )}
 
-            {/* Why me */}
-            <motion.div initial={{ opacity:0, x:20 }} whileInView={{ opacity:1, x:0 }}
-              viewport={{ once:true }} transition={{ duration:0.5, delay:0.1 }}
-              className="rounded-2xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 p-5">
-              <h3 className="font-display text-sm font-bold text-stone-900 dark:text-cream-100 mb-4">Why Work With Me?</h3>
-              <div className="space-y-3.5">
-                {perks.map(({ icon: Icon, title, desc }) => (
-                  <div key={title} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-warm-400/10 border border-warm-400/20 flex items-center justify-center flex-shrink-0">
-                      <Icon size={14} className="text-warm-500 dark:text-warm-400" />
+              {/* ── STEP 1 – Pages ── */}
+              {step === 1 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">How many pages do you need?</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">More pages = more content architecture and dev work.</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {PAGES_OPTIONS.map(po => (
+                      <button key={po.id} onClick={() => setPagesId(po.id)}
+                        className={`flex flex-col items-center justify-center p-5 rounded-2xl border transition-all duration-200 text-center ${
+                          pagesId === po.id
+                            ? "border-warm-400/70 bg-warm-400/8 dark:bg-warm-400/6 shadow-[0_2px_12px_rgba(196,150,106,0.15)]"
+                            : "border-cream-400 dark:border-dark-50 hover:border-warm-400/40 hover:bg-cream-100 dark:hover:bg-dark-100"
+                        }`}>
+                        <span className={`font-display font-bold text-lg ${pagesId === po.id ? "text-warm-600 dark:text-warm-400" : "text-stone-900 dark:text-cream-100"}`}>
+                          {po.label}
+                        </span>
+                        <span className={`text-xs font-semibold mt-1 ${po.extra === 0 ? "text-green-600 dark:text-green-400" : "text-warm-600 dark:text-warm-400"}`}>
+                          {po.extra === 0 ? "Included" : `+${fmt(po.extra)}`}
+                        </span>
+                        {pagesId === po.id && <Check size={14} className="text-warm-500 mt-2" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 2 – Features ── */}
+              {step === 2 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">Which features do you need?</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">
+                    Free features are pre-selected. Toggle add-ons to customise your quote.
+                  </p>
+                  {/* Free / Included */}
+                  <div className="mb-4">
+                    <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Always Included</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {FEATURES.filter(f => f.included).map(f => (
+                        <div key={f.id}
+                          className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-900/10 text-green-800 dark:text-green-400 text-xs font-medium">
+                          <Check size={11} className="flex-shrink-0 text-green-500" />
+                          {f.label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Add-ons */}
+                  <div>
+                    <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Add-On Features</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {FEATURES.filter(f => !f.included).map(f => {
+                        const on = features.includes(f.id);
+                        return (
+                          <button key={f.id} onClick={() => toggleFeature(f.id)}
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition-all duration-200 ${
+                              on
+                                ? "border-warm-400/60 bg-warm-400/8 dark:bg-warm-400/6"
+                                : "border-cream-400 dark:border-dark-50 hover:border-warm-400/40 hover:bg-cream-100 dark:hover:bg-dark-100"
+                            }`}>
+                            <span className={`text-xs font-medium leading-tight pr-1 ${on ? "text-warm-700 dark:text-warm-400" : "text-stone-700 dark:text-stone-300"}`}>
+                              {f.label}
+                            </span>
+                            <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                              <span className="text-[10px] font-bold text-warm-600 dark:text-warm-400">+{fmt(f.cost)}</span>
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                on ? "bg-warm-400 border-warm-400" : "border-stone-300 dark:border-stone-600"
+                              }`}>
+                                {on && <Check size={9} className="text-white" />}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 3 – Timeline ── */}
+              {step === 3 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">What&apos;s your timeline?</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">Rush projects carry a fee; flexible timelines get a discount.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {TIMELINE_OPTIONS.map(tl => (
+                      <button key={tl.id} onClick={() => setTimelineId(tl.id)}
+                        className={`flex items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 ${
+                          timelineId === tl.id
+                            ? "border-warm-400/70 bg-warm-400/8 dark:bg-warm-400/6 shadow-[0_2px_12px_rgba(196,150,106,0.15)]"
+                            : "border-cream-400 dark:border-dark-50 hover:border-warm-400/40 hover:bg-cream-100 dark:hover:bg-dark-100"
+                        }`}>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`font-semibold text-sm ${timelineId === tl.id ? "text-warm-700 dark:text-warm-400" : "text-stone-900 dark:text-cream-100"}`}>
+                              {tl.label}
+                            </span>
+                            {timelineId === tl.id && <Check size={14} className="text-warm-500 flex-shrink-0" />}
+                          </div>
+                          <span className="text-stone-500 dark:text-stone-400 text-xs">{tl.sub}</span>
+                          <div className={`text-xs font-bold mt-1 ${
+                            tl.modifier > 0 ? "text-red-500 dark:text-red-400"
+                            : tl.modifier < 0 ? "text-green-600 dark:text-green-400"
+                            : "text-stone-400"
+                          }`}>
+                            {tl.modifier > 0 ? `+${fmt(tl.modifier)} rush fee`
+                             : tl.modifier < 0 ? `${fmt(tl.modifier)} discount`
+                             : "No change"}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 4 – Details ── */}
+              {step === 4 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">Your Details</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">Almost done — just a few details so I can reach you.</p>
+                  <div className="space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className={lbl}>Name *</label>
+                        <input
+                          type="text" placeholder="Mohd Inayat" value={form.name}
+                          onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: undefined })); }}
+                          className={`${inp} ${errors.name ? "border-red-400 dark:border-red-500" : ""}`} />
+                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                      </div>
+                      <div>
+                        <label className={lbl}>Phone / WhatsApp *</label>
+                        <input
+                          type="tel" placeholder="+91 98765 43210" value={form.phone}
+                          onChange={e => { setForm(p => ({ ...p, phone: e.target.value })); setErrors(p => ({ ...p, phone: undefined })); }}
+                          className={`${inp} ${errors.phone ? "border-red-400 dark:border-red-500" : ""}`} />
+                        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-stone-800 dark:text-cream-200 text-xs font-semibold">{title}</div>
-                      <div className="text-stone-500 dark:text-stone-500 text-xs mt-0.5">{desc}</div>
+                      <label className={lbl}>Email <span className="normal-case font-normal text-stone-400">(optional)</span></label>
+                      <input
+                        type="email" placeholder="you@email.com" value={form.email}
+                        onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                        className={inp} />
+                    </div>
+                    <div>
+                      <label className={lbl}>Project Description <span className="normal-case font-normal text-stone-400">(optional)</span></label>
+                      <textarea
+                        rows={4} placeholder="Any specific requirements, references, or goals..."
+                        value={form.description}
+                        onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                        className={`${inp} resize-none`} />
                     </div>
                   </div>
-                ))}
-              </div>
-            </motion.div>
+                </div>
+              )}
 
-            {/* Recent projects */}
-            <motion.div initial={{ opacity:0, x:20 }} whileInView={{ opacity:1, x:0 }}
-              viewport={{ once:true }} transition={{ duration:0.5, delay:0.2 }}
-              className="rounded-2xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 p-5">
-              <h3 className="font-display text-sm font-bold text-stone-900 dark:text-cream-100 mb-3">Recent Live Work</h3>
-              <div className="space-y-2">
-                {[
-                  { name:"Al Mishk",       type:"E-Commerce",   link:"https://almishk.in",                    e:"🕌" },
-                  { name:"Panchaiyat Cafe",type:"Cloud Kitchen", link:"https://panchaiyatcafe.in",             e:"🍛" },
-                  { name:"Globe Trotter",  type:"Travel Agency", link:"https://globe-trotter-ui.vercel.app",   e:"✈️" },
-                ].map(p => (
-                  <a key={p.name} href={p.link} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-2.5 rounded-xl border border-cream-400 dark:border-dark-50 hover:border-warm-400/50 hover:bg-cream-100 dark:hover:bg-dark-100 transition-all group">
-                    <span className="text-xl">{p.e}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-stone-800 dark:text-cream-200 text-xs font-semibold group-hover:text-warm-700 dark:group-hover:text-warm-400 transition-colors truncate">{p.name}</div>
-                      <div className="text-stone-500 dark:text-stone-500 text-[10px]">{p.type}</div>
+              {/* ── STEP 5 – Summary ── */}
+              {step === 5 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">Your Quote Summary</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">Here&apos;s everything at a glance. Send it to WhatsApp when ready.</p>
+
+                  {/* Summary card */}
+                  <div className="rounded-2xl border border-warm-400/30 bg-warm-400/5 dark:bg-warm-400/4 p-5 mb-6 space-y-3">
+                    <SummaryRow label="Project Type" value={`${projectType?.emoji} ${projectType?.label}`} note={fmt(basePrice)} />
+                    <SummaryRow label="Pages" value={pagesOption?.label ?? "—"} note={pagesExtra === 0 ? "Included" : `+${fmt(pagesExtra)}`} noteGreen={pagesExtra === 0} />
+                    <SummaryRow label="Timeline" value={timelineOpt?.label ?? "—"}
+                      note={timelineMod > 0 ? `+${fmt(timelineMod)}` : timelineMod < 0 ? `-${fmt(Math.abs(timelineMod))}` : "No change"}
+                      noteGreen={timelineMod < 0} noteRed={timelineMod > 0} />
+
+                    {/* Features */}
+                    <div>
+                      <span className="text-xs text-stone-500 dark:text-stone-400 font-semibold block mb-1.5">Features</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {FEATURES.filter(f => features.includes(f.id)).map(f => (
+                          <span key={f.id}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                              f.cost === 0
+                                ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/40"
+                                : "bg-warm-400/10 text-warm-700 dark:text-warm-400 border border-warm-400/30"
+                            }`}>
+                            <Check size={8} />{f.label}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <span className="text-stone-300 dark:text-stone-700 group-hover:text-warm-500 text-xs transition-colors">→</span>
-                  </a>
-                ))}
-              </div>
+
+                    <div className="border-t border-warm-400/20 pt-3 mt-1 flex items-end justify-between">
+                      <div>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 mb-0.5">Total Estimate</p>
+                        <p className="font-display text-3xl font-extrabold text-stone-900 dark:text-cream-100">{fmt(totalPrice)}</p>
+                        <p className="text-stone-400 dark:text-stone-500 text-xs mt-0.5">~ ${usdPrice} USD</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-stone-500 dark:text-stone-400">For: {form.name}</p>
+                        <p className="text-xs text-stone-400 dark:text-stone-500">{form.phone}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* WhatsApp CTA */}
+                  <button onClick={sendWhatsApp}
+                    className="flex items-center justify-center gap-2.5 w-full py-4 rounded-full font-bold text-white text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(37,211,102,0.38)] active:scale-95"
+                    style={{ background: "linear-gradient(135deg,#25D366,#128C7E)" }}>
+                    <MessageCircle size={18} />
+                    Send Quote on WhatsApp
+                  </button>
+                  <p className="text-stone-400 dark:text-stone-600 text-xs text-center mt-3">
+                    Opens WhatsApp with your quote pre-filled · Free · No commitment
+                  </p>
+                </div>
+              )}
+
             </motion.div>
+          </AnimatePresence>
+
+          {/* ── Navigation buttons ── */}
+          <div className={`flex gap-3 px-6 md:px-8 pb-6 md:pb-8 ${step === 0 ? "justify-end" : "justify-between"}`}>
+            {step > 0 && (
+              <button onClick={back}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-semibold text-stone-600 dark:text-stone-400 border border-cream-400 dark:border-dark-50 bg-cream-100 dark:bg-dark-100 hover:border-warm-400/50 hover:text-warm-700 dark:hover:text-warm-400 transition-all">
+                <ChevronLeft size={15} /> Back
+              </button>
+            )}
+            {step < 5 && (
+              <button onClick={next}
+                disabled={
+                  (step === 0 && !projectId) ||
+                  (step === 1 && !pagesId) ||
+                  (step === 3 && !timelineId)
+                }
+                className="flex items-center gap-1.5 px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-warm-400 to-warm-700 hover:shadow-[0_4px_18px_rgba(196,150,106,0.40)] hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200">
+                {step === 4 ? "See Summary" : "Next"} <ChevronRight size={15} />
+              </button>
+            )}
           </div>
         </div>
+
+        {/* ── Trust strip ── */}
+        <TrustStrip />
       </div>
     </section>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Sub-components
+// ─────────────────────────────────────────────
+
+function SummaryRow({ label, value, note, noteGreen, noteRed }: {
+  label: string; value: string; note: string; noteGreen?: boolean; noteRed?: boolean;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-2">
+      <span className="text-xs text-stone-500 dark:text-stone-400 font-semibold w-24 flex-shrink-0">{label}</span>
+      <span className="text-sm text-stone-800 dark:text-cream-200 font-medium flex-1">{value}</span>
+      <span className={`text-xs font-bold flex-shrink-0 ${
+        noteGreen ? "text-green-600 dark:text-green-400"
+        : noteRed ? "text-red-500 dark:text-red-400"
+        : "text-warm-600 dark:text-warm-400"
+      }`}>
+        {note}
+      </span>
+    </div>
+  );
+}
+
+const perks = [
+  { icon: Zap,    title: "Fast Delivery",  desc: "Most projects in 2–4 weeks"  },
+  { icon: Clock,  title: "Quick Reply",    desc: "Response within 4 hours"      },
+  { icon: Shield, title: "Clean Code",     desc: "Documented & yours to keep"   },
+  { icon: Star,   title: "5★ Rated",       desc: "Consistent quality, every time"},
+];
+
+function TrustStrip() {
+  return (
+    <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {perks.map(({ icon: Icon, title, desc }) => (
+        <div key={title}
+          className="flex flex-col items-center text-center gap-2 p-4 rounded-2xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200">
+          <div className="w-9 h-9 rounded-xl bg-warm-400/10 border border-warm-400/20 flex items-center justify-center">
+            <Icon size={16} className="text-warm-500 dark:text-warm-400" />
+          </div>
+          <div>
+            <div className="text-stone-800 dark:text-cream-200 text-xs font-semibold">{title}</div>
+            <div className="text-stone-400 dark:text-stone-500 text-[10px] mt-0.5">{desc}</div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
