@@ -52,7 +52,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-stone-400 text-sm leading-relaxed mb-6 max-w-xs">
-              Your digital journey starts here. Built by Mohd Inayat — Full-Stack & Java Developer based in Delhi. MERN Stack, Next.js, AI-integrated solutions.
+              TheWebYatra is a premium web development agency. We build websites, apps and digital experiences that drive growth for businesses worldwide.
             </p>
             <div className="space-y-2.5 mb-6">
               <a href="mailto:mohammedinayat12@gmail.com" className="flex items-center gap-2 text-stone-400 hover:text-warm-400 text-sm transition-colors">
@@ -111,7 +111,7 @@ export default function Footer() {
         </div>
 
         <div className="py-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-stone-500 text-sm">© 2025 TheWebYatra · Made by Mohd Inayat. All rights reserved.</p>
+          <p className="text-stone-500 text-sm">© 2025 TheWebYatra. All rights reserved.</p>
           <div className="flex items-center gap-5">
             {footerLinks.legal.map((l) => (
               <Link key={l.href} href={l.href} className="text-stone-500 hover:text-stone-300 text-xs transition-colors">{l.label}</Link>

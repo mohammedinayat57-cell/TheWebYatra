@@ -57,7 +57,7 @@ export default function ContactPageClient() {
           </motion.h1>
           <motion.p className="text-stone-600 dark:text-stone-400 text-lg md:text-xl max-w-xl mx-auto"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            Fill the form and hit send — it opens WhatsApp directly so you can chat with Mohd Inayat instantly.
+            Fill the form and hit send — it opens WhatsApp directly so you can chat with our team instantly.
           </motion.p>
         </div>
       </section>
@@ -86,7 +86,7 @@ export default function ContactPageClient() {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="name" className={lbl}>Your Name *</label>
-                    <input id="name" name="name" type="text" required placeholder="Mohd Inayat" value={form.name} onChange={onChange} className={inp} />
+                    <input id="name" name="name" type="text" required placeholder="Your Name" value={form.name} onChange={onChange} className={inp} />
                   </div>
                   <div>
                     <label htmlFor="phone" className={lbl}>Phone / WhatsApp *</label>

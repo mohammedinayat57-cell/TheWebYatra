@@ -38,7 +38,7 @@ const FEATURES: Feature[] = [
   { id: "perf",        label: "Basic Performance Optimization", cost: 0,    included: true  },
   { id: "social-int",  label: "Social Media Integration",       cost: 0,    included: true  },
   // Optional add-ons
-  { id: "whatsapp",    label: "WhatsApp Integration",           cost: 2000, included: false },
+  { id: "whatsapp",    label: "WhatsApp Integration",           cost: 0,    included: true  },
   { id: "payment",     label: "Payment Gateway",                cost: 5000, included: false },
   { id: "admin",       label: "Admin Panel",                    cost: 8000, included: false },
   { id: "blog",        label: "Blog / News Section",            cost: 3000, included: false },

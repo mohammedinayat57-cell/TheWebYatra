@@ -39,9 +39,9 @@ export default function Navbar() {
             ? "bg-cream-100/90 dark:bg-dark-300/90 backdrop-blur-xl border-b border-cream-400 dark:border-dark-50 shadow-sm"
             : "bg-transparent"
         }`}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}

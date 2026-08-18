@@ -39,27 +39,27 @@ export default function Hero() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              Available for Projects · Delhi, India
+              🟢 Available for New Projects
             </motion.div>
 
-            {/* Name + role */}
+            {/* Heading + role */}
             <motion.div custom={1} initial="hidden" animate="visible" variants={fadeUp}>
               <p className="text-stone-500 dark:text-stone-500 text-base font-medium mb-2 tracking-wide">
-                Hi, I&apos;m Mohd Inayat 👋
+                TheWebYatra — Your Digital Journey Starts Here
               </p>
-              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold text-stone-900 dark:text-cream-100 leading-[1.1] tracking-tight mb-2">                Full-Stack{" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-warm-500 via-warm-600 to-warm-800 dark:from-warm-400 dark:via-warm-500 dark:to-warm-600">
-                  Developer
-                </span>
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold text-stone-900 dark:text-cream-100 leading-[1.1] tracking-tight mb-2">
+                Premium Web Development
               </h1>
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-semibold text-stone-600 dark:text-stone-400 mb-6">
-                & Founder of TheWebYatra
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold leading-[1.1] tracking-tight mb-6">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-warm-500 via-warm-600 to-warm-800 dark:from-warm-400 dark:via-warm-500 dark:to-warm-600">
+                  For Your Business
+                </span>
               </h2>
             </motion.div>
 
             <motion.p custom={2} initial="hidden" animate="visible" variants={fadeUp}
               className="text-stone-600 dark:text-stone-400 text-lg leading-relaxed mb-6 max-w-lg">
-              I build <strong className="text-stone-800 dark:text-cream-200 font-semibold">scalable web apps</strong>, e-commerce platforms, and AI-integrated products. MERN Stack · Java · Next.js. Every project ships live and drives results.
+              We craft <strong className="text-stone-800 dark:text-cream-200 font-semibold">high-performance websites</strong>, e-commerce stores, mobile apps and AI-integrated digital products that grow your business. MERN Stack · Next.js · Java · Full-Stack.
             </motion.p>
 
             {/* Tech stack pills */}
@@ -81,7 +81,7 @@ export default function Hero() {
               </Link>
               <Link href="/work"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-warm-800 dark:text-warm-400 text-base border border-warm-400/40 bg-white/80 dark:bg-dark-200/80 backdrop-blur-sm hover:border-warm-400/70 hover:bg-cream-300 dark:hover:bg-dark-100 transition-all duration-300">
-                <Code2 size={15} /> View My Work
+                <Code2 size={15} /> View Our Work
               </Link>
             </motion.div>
 
@@ -93,16 +93,16 @@ export default function Hero() {
                   className="w-9 h-9 rounded-xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 flex items-center justify-center text-stone-500 dark:text-stone-500 hover:text-warm-700 dark:hover:text-warm-400 hover:border-warm-400/50 transition-all">
                   <GitHubIcon size={16} />
                 </a>
-                <a href="https://www.linkedin.com/in/inayatshaykh/" target="_blank" rel="noopener noreferrer"
+                <a href="https://instagram.com/thewebyatra" target="_blank" rel="noopener noreferrer"
                   className="w-9 h-9 rounded-xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 flex items-center justify-center text-stone-500 dark:text-stone-500 hover:text-warm-700 dark:hover:text-warm-400 hover:border-warm-400/50 transition-all">
                   <LinkedInIcon size={16} />
                 </a>
               </div>
               <div className="h-5 w-px bg-cream-400 dark:bg-dark-50" />
               {[
-                { value: "6+", label: "Live Projects" },
-                { value: "3+", label: "Internships" },
-                { value: "5★", label: "Rating" },
+                { value: "50+", label: "Projects" },
+                { value: "100%", label: "On-time" },
+                { value: "5★", label: "Rated" },
               ].map((s) => (
                 <div key={s.label} className="flex flex-col">
                   <span className="font-display text-xl font-bold gradient-text leading-none">{s.value}</span>

@@ -17,23 +17,23 @@ export const metadata: Metadata = {
     template: "%s | TheWebYatra",
   },
   description:
-    "TheWebYatra is a premium web development agency by Mohd Inayat — Full-Stack, MERN & Java Developer based in Delhi. We build high-performance websites, e-commerce stores, and AI-integrated products.",
-  keywords: ["web development agency", "MERN stack developer", "full stack developer Delhi", "TheWebYatra", "Mohd Inayat", "Next.js development", "e-commerce development India"],
-  authors: [{ name: "Mohd Inayat", url: siteUrl }],
-  creator: "Mohd Inayat",
+    "TheWebYatra is a premium web development agency specializing in Next.js, React, MERN Stack, E-Commerce, SEO and AI-integrated digital solutions. Based in Delhi, India.",
+  keywords: ["web development agency", "MERN stack developer", "full stack developer Delhi", "TheWebYatra", "Next.js development", "e-commerce development India"],
+  authors: [{ name: "TheWebYatra", url: siteUrl }],
+  creator: "TheWebYatra",
   publisher: "TheWebYatra",
   robots: { index: true, follow: true },
   openGraph: {
     type: "website", locale: "en_IN", url: siteUrl, siteName: "TheWebYatra",
     title: "TheWebYatra — Your Digital Journey Starts Here",
-    description: "Premium web development by Mohd Inayat. MERN Stack · Next.js · Java · AI Integration.",
+    description: "Premium web development agency. MERN Stack · Next.js · Java · AI Integration.",
     images: [{ url: `${siteUrl}/og-image.jpg`, width: 1200, height: 630, alt: "TheWebYatra" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "TheWebYatra — Your Digital Journey Starts Here",
-    description: "Premium web development by Mohd Inayat. Your digital journey starts here.",
-    site: "@thewebyatra", creator: "@inayatshaykh",
+    description: "Premium web development agency. Your digital journey starts here.",
+    site: "@thewebyatra", creator: "@thewebyatra",
     images: [`${siteUrl}/og-image.jpg`],
   },
   alternates: { canonical: siteUrl },
@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-cream-100 dark:bg-dark-400 text-stone-900 dark:text-cream-100 transition-colors duration-300`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="theme">
           <Navbar />
-          <main>{children}</main>
+          <main className="pt-16">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

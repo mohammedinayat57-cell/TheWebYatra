@@ -32,7 +32,7 @@ export default function CTABanner() {
             </h2>
 
             <p className="text-stone-600 dark:text-stone-400 text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-              Drop me a message on WhatsApp. Free quote, fast response, zero commitment — let&apos;s talk about your project today.
+              Drop us a message on WhatsApp. Free quote, fast response, zero commitment — let&apos;s talk about your project today.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -43,7 +43,7 @@ export default function CTABanner() {
               </Link>
               <Link href="/work"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full font-semibold text-warm-800 dark:text-warm-400 text-base border border-warm-400/40 bg-white/80 dark:bg-dark-200/80 hover:border-warm-400/70 hover:bg-white dark:hover:bg-dark-200 transition-all">
-                See My Work
+                See Our Work
               </Link>
             </div>
 

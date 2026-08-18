@@ -25,11 +25,11 @@ export default function AboutPageClient() {
           </motion.div>
           <motion.h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 dark:text-cream-100 mb-6 leading-tight"
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            Meet <span className="gradient-text">Mohd Inayat</span> — Founder
+            About <span className="gradient-text">TheWebYatra</span>
           </motion.h1>
           <motion.p className="text-stone-600 dark:text-stone-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            Full-Stack & Java Developer from Delhi. Building scalable web apps, e-commerce platforms, and AI-integrated products. Available for freelance and full-time.
+            Premium web development agency based in Delhi, India. We build websites, apps and digital experiences that grow businesses.
           </motion.p>
         </div>
       </section>
@@ -48,8 +48,8 @@ export default function AboutPageClient() {
               </h2>
               <div className="space-y-4 text-stone-600 dark:text-stone-400 leading-relaxed text-base">
                 <p>In Sanskrit, <em className="text-stone-900 dark:text-cream-200 font-medium">&ldquo;Yatra&rdquo;</em> means journey — a pilgrimage toward something meaningful. Building a digital presence is a continuous, evolving journey.</p>
-                <p>From the first wireframe to launch and beyond — I walk every step of that journey with you as your developer, guide, and partner.</p>
-                <p>Interned at Oasis Infobyte, CodSoft, and OctaNet. Built live products used by real customers: Al Mishk, Panchaiyat Cafe, Globe Trotter, and more.</p>
+                <p>From the first wireframe to launch and beyond — we walk every step of that journey with you as your development partner and guide.</p>
+                <p>Founded by a team of passionate developers and designers committed to delivering premium digital experiences. Built live products used by real customers: Al Mishk, Panchaiyat Cafe, Globe Trotter, and more.</p>
               </div>
             </motion.div>
 
@@ -58,9 +58,9 @@ export default function AboutPageClient() {
               viewport={{ once: true }} transition={{ duration: 0.6 }}>
               {[
                 { value: "6+", label: "Live Projects", icon: "🚀" },
-                { value: "3+", label: "Internships", icon: "💼" },
+                { value: "50+", label: "Client Projects", icon: "💼" },
                 { value: "4+", label: "Tech Stacks", icon: "⚡" },
-                { value: "Delhi", label: "Based In", icon: "📍" },
+                { value: "Delhi", label: "India-based", icon: "📍" },
               ].map((stat, i) => (
                 <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
