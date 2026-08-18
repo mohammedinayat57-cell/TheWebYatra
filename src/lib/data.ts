@@ -3,7 +3,7 @@ import type { Service, Project, Testimonial, PricingPlan, TeamMember, ProcessSte
 export const services: Service[] = [
   {
     id: "web-design",
-    icon: "✦",
+    icon: "🎨",
     title: "Web Design",
     description: "Pixel-perfect, conversion-focused designs that tell your brand story and captivate your audience.",
     features: ["UI/UX Design", "Brand Identity", "Wireframing", "Prototyping", "Design Systems"],
@@ -11,7 +11,7 @@ export const services: Service[] = [
   },
   {
     id: "web-development",
-    icon: "⟨/⟩",
+    icon: "💻",
     title: "Web Development",
     description: "Blazing-fast, scalable web applications built with modern technologies and best practices.",
     features: ["Next.js / React", "Node.js APIs", "Database Design", "CMS Integration", "Performance Optimization"],
@@ -19,7 +19,7 @@ export const services: Service[] = [
   },
   {
     id: "ecommerce",
-    icon: "◈",
+    icon: "🛒",
     title: "E-Commerce",
     description: "High-converting online stores that turn visitors into loyal customers at scale.",
     features: ["Shopify / WooCommerce", "Custom Checkout", "Payment Integration", "Inventory System", "Analytics"],
@@ -27,7 +27,7 @@ export const services: Service[] = [
   },
   {
     id: "seo",
-    icon: "◎",
+    icon: "📈",
     title: "SEO Optimization",
     description: "Data-driven SEO strategies that put your business at the top of search results.",
     features: ["Technical SEO", "Content Strategy", "Keyword Research", "Link Building", "Analytics & Reports"],
@@ -35,7 +35,7 @@ export const services: Service[] = [
   },
   {
     id: "branding",
-    icon: "◆",
+    icon: "✏️",
     title: "Branding",
     description: "Build a memorable brand identity that resonates, differentiates, and endures.",
     features: ["Logo Design", "Brand Guidelines", "Color Systems", "Typography", "Brand Strategy"],
@@ -43,7 +43,7 @@ export const services: Service[] = [
   },
   {
     id: "app-dev",
-    icon: "⬡",
+    icon: "📱",
     title: "App Development",
     description: "Native and cross-platform mobile apps with seamless experiences across all devices.",
     features: ["React Native", "iOS & Android", "API Integration", "App Store Launch", "Push Notifications"],

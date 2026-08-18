@@ -1,4 +1,5 @@
 "use client";
+import BackButton from "@/components/ui/BackButton";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
@@ -9,6 +10,7 @@ export default function PricingPageClient() {
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="max-w-lg w-full text-center">
+        <div className="flex justify-start mb-4"><BackButton label="Back to Home" /></div>
         <div className="text-6xl mb-6">💬</div>
         <h1 className="font-display text-3xl md:text-4xl font-bold text-stone-900 dark:text-cream-100 mb-4">
           Pricing is on the <span className="gradient-text">Homepage</span>

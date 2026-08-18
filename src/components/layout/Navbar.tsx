@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -10,8 +11,8 @@ const navLinks = [
   { href: "/",         label: "Home" },
   { href: "/services", label: "Services" },
   { href: "/work",     label: "Work" },
-  { href: "/about",    label: "About" },
-  { href: "/#quote",   label: "Pricing" },
+  { href: "/#tech",    label: "Technologies" },
+  { href: "/about",    label: "About Us" },
   { href: "/contact",  label: "Contact" },
 ];
 
@@ -45,14 +46,22 @@ export default function Navbar() {
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative w-8 h-8">
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-warm-400 to-warm-700 opacity-90 group-hover:opacity-100 transition-opacity" />
-              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">W</div>
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <Image
+              src="/logo.ico"
+              alt="TheWebYatra Logo"
+              width={40}
+              height={40}
+              className="rounded-lg object-cover flex-shrink-0"
+            />
+            <div className="flex flex-col leading-tight">
+              <span className="font-display font-bold text-lg tracking-tight text-stone-900 dark:text-cream-100 leading-none">
+                TheWebYatra
+              </span>
+              <span className="text-[9px] font-semibold tracking-[0.12em] text-warm-600 dark:text-warm-400 uppercase">
+                We Code. You Grow.
+              </span>
             </div>
-            <span className="font-display font-bold text-xl tracking-tight text-stone-900 dark:text-cream-100">
-              The<span className="gradient-text">Web</span>Yatra
-            </span>
           </Link>
 
           {/* Desktop nav */}

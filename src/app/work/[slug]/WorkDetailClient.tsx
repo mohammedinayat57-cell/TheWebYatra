@@ -1,7 +1,8 @@
 "use client";
+import BackButton from "@/components/ui/BackButton";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Tag, MessageCircle } from "lucide-react";
+import { ArrowRight, Tag, MessageCircle } from "lucide-react";
 import type { Project } from "@/types";
 import { projects } from "@/lib/data";
 
@@ -62,10 +63,7 @@ export default function WorkDetailClient({ project }: Props) {
         <div className="absolute inset-0 animated-grid opacity-30" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-            <Link href="/work"
-              className="inline-flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-warm-700 dark:hover:text-warm-400 text-sm transition-colors mb-8">
-              <ArrowLeft size={14} /> Back to Work
-            </Link>
+            <BackButton label="Back to Work" />
             <div className="flex flex-wrap gap-2 mb-4">
               {project.tags.map((tag) => (
                 <span key={tag}

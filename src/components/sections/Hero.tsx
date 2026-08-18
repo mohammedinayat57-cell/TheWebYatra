@@ -53,10 +53,15 @@ export default function Hero() {
             </motion.div>
 
             {/* Sub */}
-            <motion.p custom={2} initial="hidden" animate="visible" variants={fadeUp}
-              className="text-stone-600 dark:text-stone-400 text-lg leading-relaxed mb-8 max-w-lg">
-              We craft <strong className="text-stone-800 dark:text-cream-200 font-semibold">high-performance websites</strong>, e-commerce stores, mobile apps and AI-integrated digital products that grow your business.
-            </motion.p>
+            <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp}
+              className="mb-8 max-w-lg">
+              <p className="text-stone-800 dark:text-cream-200 text-base font-semibold mb-1">
+                Innovative Solutions. Scalable Results. Digital Growth.
+              </p>
+              <p className="text-stone-600 dark:text-stone-400 text-base leading-relaxed">
+                We build fast, secure and user-centric digital experiences that help your business lead the market.
+              </p>
+            </motion.div>
 
             {/* CTAs */}
             <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}

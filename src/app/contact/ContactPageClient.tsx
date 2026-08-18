@@ -1,4 +1,5 @@
 "use client";
+import BackButton from "@/components/ui/BackButton";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
@@ -47,6 +48,7 @@ export default function ContactPageClient() {
       <section className="relative pt-32 pb-16 bg-cream-100 dark:bg-dark-400 overflow-hidden">
         <div className="absolute inset-0 animated-grid" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="flex justify-start mb-4"><BackButton label="Back to Home" /></div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-warm-400/30 bg-warm-400/10 text-warm-700 dark:text-warm-400 text-sm font-medium mb-6">
             <MessageCircle size={13} /> Chat on WhatsApp
