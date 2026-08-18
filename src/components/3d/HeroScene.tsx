@@ -2,205 +2,216 @@
 
 import { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { MeshDistortMaterial, Sphere, Float, Stars, Torus } from "@react-three/drei";
+import { MeshDistortMaterial, Stars } from "@react-three/drei";
 import * as THREE from "three";
 
-// ─── Globe components (unchanged) ────────────────────────────────────────────
+// ─── Shared bronze material ───────────────────────────────────────────────────
+function useBronze() {
+  return useMemo(() => new THREE.MeshStandardMaterial({
+    color: new THREE.Color("#B8870A"),
+    metalness: 0.92,
+    roughness: 0.18,
+    envMapIntensity: 1.2,
+  }), []);
+}
 
+// ─── Globe — unchanged rotation / animation ───────────────────────────────────
 function DistortedSphere({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: number }> }) {
   const meshRef = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     if (!meshRef.current) return;
     const t = state.clock.getElapsedTime();
-    meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, mousePos.current.y * 0.4, 0.05);
-    meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, mousePos.current.x * 0.4 + t * 0.15, 0.05);
+    meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, mousePos.current.y * 0.3, 0.05);
+    meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, mousePos.current.x * 0.3 + t * 0.18, 0.05);
   });
   return (
-    <Float speed={2} rotationIntensity={0.3} floatIntensity={0.8}>
-      <Sphere ref={meshRef} args={[1.5, 64, 64]}>
-        <MeshDistortMaterial color="#C4966A" attach="material" distort={0.45} speed={2.5} roughness={0.15} metalness={0.6} wireframe={false} />
-      </Sphere>
-    </Float>
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[1.55, 64, 64]} />
+      <MeshDistortMaterial
+        color="#1A0F00"
+        distort={0.42}
+        speed={2.2}
+        roughness={0.35}
+        metalness={0.3}
+      />
+    </mesh>
   );
 }
 
+// ─── Wireframe sphere (the golden mesh cage around the globe) ─────────────────
 function WireframeSphere({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: number }> }) {
   const meshRef = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     if (!meshRef.current) return;
     const t = state.clock.getElapsedTime();
-    meshRef.current.rotation.x = t * 0.05;
-    meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, mousePos.current.x * 0.2 + t * 0.08, 0.02);
+    meshRef.current.rotation.x = t * 0.04;
+    meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, mousePos.current.x * 0.15 + t * 0.09, 0.02);
   });
   return (
-    <Sphere ref={meshRef} args={[2.2, 24, 24]}>
-      <meshBasicMaterial color="#8B5E3C" wireframe transparent opacity={0.12} />
-    </Sphere>
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[2.0, 20, 20]} />
+      <meshBasicMaterial color="#C4966A" wireframe transparent opacity={0.18} />
+    </mesh>
   );
 }
 
-function OrbitRing({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: number }> }) {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    ref.current.rotation.x = Math.PI / 2.5 + mousePos.current.y * 0.2;
-    ref.current.rotation.y = state.clock.getElapsedTime() * 0.3;
-  });
-  return (
-    <Torus ref={ref} args={[2.8, 0.015, 16, 120]}>
-      <meshBasicMaterial color="#C4966A" transparent opacity={0.55} />
-    </Torus>
-  );
-}
-
-function OrbitRing2() {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    ref.current.rotation.x = Math.PI / 3;
-    ref.current.rotation.z = state.clock.getElapsedTime() * -0.2;
-  });
-  return (
-    <Torus ref={ref} args={[3.4, 0.01, 16, 120]}>
-      <meshBasicMaterial color="#E8C9A0" transparent opacity={0.3} />
-    </Torus>
-  );
-}
-
+// ─── Floating particles ───────────────────────────────────────────────────────
 function FloatingParticles() {
-  const count = 60;
+  const count = 50;
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3]     = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      pos[i * 3]     = (Math.random() - 0.5) * 9;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 9;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 9;
     }
     return pos;
   }, []);
   const ref = useRef<THREE.Points>(null);
-  useFrame((state) => { if (ref.current) ref.current.rotation.y = state.clock.getElapsedTime() * 0.03; });
+  useFrame((s) => { if (ref.current) ref.current.rotation.y = s.clock.getElapsedTime() * 0.025; });
   return (
     <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial color="#C4966A" size={0.04} transparent opacity={0.5} />
+      <pointsMaterial color="#D4A860" size={0.035} transparent opacity={0.55} />
     </points>
   );
 }
 
-// ─── Globe Stand (Three.js, stays fixed in world space) ──────────────────────
+// ─── Orbit ellipses (the two tilted rings visible in the reference) ────────────
+function OrbitEllipses() {
+  const r1 = useRef<THREE.Mesh>(null);
+  const r2 = useRef<THREE.Mesh>(null);
+  useFrame((s) => {
+    const t = s.clock.getElapsedTime();
+    if (r1.current) r1.current.rotation.z = t * 0.25;
+    if (r2.current) r2.current.rotation.z = -t * 0.18;
+  });
+  return (
+    <>
+      <mesh ref={r1} rotation={[Math.PI / 2.8, 0.4, 0]}>
+        <torusGeometry args={[2.7, 0.008, 8, 120]} />
+        <meshBasicMaterial color="#C4966A" transparent opacity={0.22} />
+      </mesh>
+      <mesh ref={r2} rotation={[Math.PI / 2.2, -0.3, 0.6]}>
+        <torusGeometry args={[3.1, 0.006, 8, 120]} />
+        <meshBasicMaterial color="#C4966A" transparent opacity={0.14} />
+      </mesh>
+    </>
+  );
+}
 
+// ─── Globe Stand — full circular meridian ring + stem + base ─────────────────
 function GlobeStand() {
-  const bronze = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#C4966A"),
-    metalness: 0.85,
-    roughness: 0.25,
-  }), []);
+  const bronze = useBronze();
 
-  // Curved arm: a torus arc from the base up to the top of the globe
-  const arcCurve = useMemo(() => {
-    const curve = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(0.3, -2.5, 0),   // bottom — base level
-      new THREE.Vector3(2.8, 0, 0),      // control point (curves outward)
-      new THREE.Vector3(0, 2.2, 0),      // top — top of globe
+  // Build the full circular meridian ring using TubeGeometry around a circle
+  const ringGeom = useMemo(() => {
+    const radius = 2.05;
+    const path = new THREE.CatmullRomCurve3(
+      Array.from({ length: 65 }, (_, i) => {
+        const angle = (i / 64) * Math.PI * 2;
+        return new THREE.Vector3(Math.sin(angle) * radius, Math.cos(angle) * radius, 0);
+      }),
+      true
     );
-    return curve;
+    return new THREE.TubeGeometry(path, 128, 0.042, 10, true);
   }, []);
-
-  const arcGeometry = useMemo(() => {
-    const pts = arcCurve.getPoints(64);
-    const path = new THREE.CatmullRomCurve3(pts);
-    return new THREE.TubeGeometry(path, 64, 0.045, 10, false);
-  }, [arcCurve]);
 
   return (
     <group>
-      {/* Curved side arm */}
-      <mesh geometry={arcGeometry} material={bronze} />
+      {/* ── Full circular meridian ring ── */}
+      <mesh geometry={ringGeom} material={bronze} rotation={[0, 0, 0]} />
 
-      {/* Knob at top of arm */}
-      <mesh position={[0, 2.22, 0]} material={bronze}>
-        <sphereGeometry args={[0.1, 16, 16]} />
+      {/* Knob at top of ring */}
+      <mesh position={[0, 2.08, 0]} material={bronze}>
+        <sphereGeometry args={[0.11, 20, 20]} />
       </mesh>
 
-      {/* Knob at bottom join */}
-      <mesh position={[0.28, -2.45, 0]} material={bronze}>
+      {/* Knob at bottom of ring (where arm meets stem) */}
+      <mesh position={[0, -2.08, 0]} material={bronze}>
         <sphereGeometry args={[0.09, 16, 16]} />
       </mesh>
 
-      {/* Vertical stem */}
-      <mesh position={[0, -3.35, 0]} material={bronze}>
-        <cylinderGeometry args={[0.045, 0.06, 0.9, 16]} />
+      {/* Short neck connecting ring bottom to stem */}
+      <mesh position={[0, -2.38, 0]} material={bronze}>
+        <cylinderGeometry args={[0.05, 0.05, 0.52, 14]} />
       </mesh>
 
-      {/* Connector knob */}
-      <mesh position={[0, -2.85, 0]} material={bronze}>
-        <cylinderGeometry args={[0.1, 0.1, 0.15, 16]} />
+      {/* Connector knob mid-stem */}
+      <mesh position={[0, -2.66, 0]} material={bronze}>
+        <cylinderGeometry args={[0.12, 0.12, 0.14, 20]} />
       </mesh>
 
-      {/* Upper base cylinder */}
-      <mesh position={[0, -3.9, 0]} material={bronze}>
-        <cylinderGeometry args={[0.35, 0.45, 0.12, 32]} />
+      {/* Main vertical stem */}
+      <mesh position={[0, -3.05, 0]} material={bronze}>
+        <cylinderGeometry args={[0.055, 0.07, 0.62, 16]} />
       </mesh>
 
-      {/* Lower base disc */}
-      <mesh position={[0, -4.05, 0]} material={bronze}>
-        <cylinderGeometry args={[0.75, 0.85, 0.1, 48]} />
+      {/* Upper base platform */}
+      <mesh position={[0, -3.42, 0]} material={bronze}>
+        <cylinderGeometry args={[0.38, 0.48, 0.14, 40]} />
       </mesh>
 
-      {/* Base rim */}
-      <mesh position={[0, -4.12, 0]} material={bronze}>
-        <torusGeometry args={[0.78, 0.04, 12, 48]} />
+      {/* Main base disc */}
+      <mesh position={[0, -3.57, 0]} material={bronze}>
+        <cylinderGeometry args={[0.82, 0.88, 0.11, 60]} />
+      </mesh>
+
+      {/* Base rim ring */}
+      <mesh position={[0, -3.64, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.84, 0.045, 14, 60]} />
+        <primitive object={bronze} attach="material" />
       </mesh>
     </group>
   );
 }
 
 // ─── Full scene ───────────────────────────────────────────────────────────────
-
 function Scene({ mousePos }: { mousePos: React.MutableRefObject<{ x: number; y: number }> }) {
   return (
     <>
-      <ambientLight intensity={0.6} />
-      <pointLight position={[5, 5, 5]} intensity={1.2} color="#C4966A" />
-      <pointLight position={[-5, -5, -5]} intensity={0.6} color="#E8C9A0" />
-      <pointLight position={[0, 5, -5]} intensity={0.8} color="#8B5E3C" />
-      <Stars radius={80} depth={50} count={400} factor={3} saturation={0} fade speed={0.5} />
+      {/* Lighting for premium brass look */}
+      <ambientLight intensity={0.55} />
+      <pointLight position={[4, 4, 4]} intensity={1.8} color="#F5E0A0" />
+      <pointLight position={[-4, 2, -3]} intensity={0.7} color="#C4966A" />
+      <pointLight position={[0, -3, 3]} intensity={0.4} color="#E8C9A0" />
+      <directionalLight position={[3, 5, 3]} intensity={0.9} color="#FFF0CC" castShadow />
+
+      <Stars radius={80} depth={50} count={350} factor={3} saturation={0} fade speed={0.4} />
       <FloatingParticles />
+      <OrbitEllipses />
       <WireframeSphere mousePos={mousePos} />
       <DistortedSphere mousePos={mousePos} />
-      <OrbitRing mousePos={mousePos} />
-      <OrbitRing2 />
-      {/* Stand — fixed in world space, globe rotates above it */}
+      {/* Stand is fixed in world space — globe rotates inside it */}
       <GlobeStand />
     </>
   );
 }
 
 // ─── Export ───────────────────────────────────────────────────────────────────
-
 export default function HeroScene() {
   const mousePos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const fn = (e: MouseEvent) => {
       mousePos.current = {
         x: (e.clientX / window.innerWidth - 0.5) * 2,
         y: (e.clientY / window.innerHeight - 0.5) * 2,
       };
     };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", fn);
+    return () => window.removeEventListener("mousemove", fn);
   }, []);
 
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 50 }}
+        camera={{ position: [0, 0.4, 7.5], fov: 48 }}
         gl={{ antialias: true, alpha: true }}
         dpr={[1, 2]}
+        shadows
       >
         <Scene mousePos={mousePos} />
       </Canvas>
