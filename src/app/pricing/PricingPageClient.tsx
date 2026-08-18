@@ -6,8 +6,8 @@ import { pricingPlans } from "@/lib/data";
 import CTABanner from "@/components/sections/CTABanner";
 
 const usdEquiv: Record<string, string> = {
-  "₹24,999": "~ $294 usd",
-  "₹64,999": "~ $765 usd",
+  "₹49,999": "~ $588 usd",
+  "₹1,19,999": "~ $1,412 usd",
 };
 
 const featureComparison = [
