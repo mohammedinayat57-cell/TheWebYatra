@@ -9,7 +9,7 @@ const budgetOptions = ["< ₹25,000","₹25,000 – ₹50,000","₹50,000 – �
 
 const contactInfo = [
   { icon: MessageCircle, label: "WhatsApp",    value: "+91 8920291416",             href: "https://wa.me/918920291416" },
-  { icon: Mail,          label: "Email",       value: "mohammedinayat12@gmail.com",  href: "mailto:mohammedinayat12@gmail.com" },
+  { icon: Mail,          label: "Email",       value: "support@thewebyatra.com",  href: "mailto:support@thewebyatra.com" },
   { icon: Phone,         label: "Call",        value: "+91 8920291416",             href: "tel:+918920291416" },
   { icon: MapPin,        label: "Based In",    value: "Delhi, India · Remote Worldwide", href: null },
   { icon: Clock,         label: "Response",    value: "Within 2–4 hours",           href: null },

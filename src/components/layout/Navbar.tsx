@@ -136,6 +136,7 @@ export default function Navbar() {
                   >
                     <Link
                       href={link.href}
+                      onClick={() => setMobileOpen(false)}
                       className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${
                         pathname === link.href
                           ? "text-warm-700 dark:text-warm-400 bg-cream-300 dark:bg-dark-100"

@@ -200,7 +200,7 @@ export default function GetQuote() {
       doc.setDrawColor(226, 217, 206); doc.line(14, y, W - 14, y); y += 7;
       doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(156, 136, 120);
       doc.text("Final price may vary depending on exact requirements. This is a non-binding estimate.", 14, y); y += 5;
-      doc.text("TheWebYatra  |  mohammedinayat12@gmail.com  |  +91 89202 91416", 14, y);
+      doc.text("TheWebYatra  |  support@thewebyatra.com  |  +91 89202 91416", 14, y);
 
       doc.save(`TheWebYatra_Quote_${form.name.replace(/\s+/g, "_") || "Client"}.pdf`);
     } catch (err) {

@@ -115,34 +115,24 @@ export default function Hero() {
               <HeroScene />
             </Suspense>
 
-            {/* Floating: live project */}
+            {/* Floating: "WE CODE. YOU GROW." tagline */}
             <motion.div
-              className="absolute top-8 -left-4 sm:left-4 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg z-10"
-              animate={{ y: [0, -8, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-warm-400 to-warm-700 flex items-center justify-center text-lg shadow-md">🍛</div>
-              <div>
-                <div className="text-stone-900 dark:text-cream-200 text-xs font-semibold">Live Project</div>
-                <div className="text-stone-500 dark:text-stone-500 text-[10px]">panchaiyatcafe.in · Restaurant</div>
-              </div>
+              className="absolute top-6 left-1/2 -translate-x-1/2 bg-white/85 dark:bg-dark-200/85 backdrop-blur-md border border-warm-400/30 rounded-full px-5 py-2 z-10 shadow-lg whitespace-nowrap"
+              animate={{ y: [0, -6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+              <span className="font-display font-bold text-sm tracking-[0.15em] uppercase gradient-text">
+                We Code. You Grow.
+              </span>
             </motion.div>
 
-            {/* Floating: rating */}
+            {/* Floating: rating only */}
             <motion.div
-              className="absolute bottom-20 -right-2 sm:right-4 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-4 py-3 z-10 shadow-lg"
+              className="absolute bottom-16 right-2 sm:right-6 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-4 py-3 z-10 shadow-lg"
               animate={{ y: [0, 8, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
               <div className="flex items-center gap-1 mb-1">
                 {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="currentColor" className="text-amber-500" />)}
               </div>
               <div className="font-display text-stone-900 dark:text-cream-200 text-lg font-bold">5.0</div>
               <div className="text-stone-500 dark:text-stone-500 text-[10px]">Client Rating</div>
-            </motion.div>
-
-            {/* Floating: tech */}
-            <motion.div
-              className="absolute top-1/2 -translate-y-1/2 -right-2 sm:right-2 bg-white/90 dark:bg-dark-200/90 backdrop-blur-md border border-cream-400 dark:border-dark-50 rounded-xl px-3 py-2 z-10 shadow-lg"
-              animate={{ y: [0, -6, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
-              <div className="text-stone-500 dark:text-stone-600 text-[9px] mb-1 uppercase tracking-wider">Built With</div>
-              <div className="text-stone-900 dark:text-cream-200 text-xs font-bold">MERN + Next.js</div>
             </motion.div>
           </motion.div>
         </div>
