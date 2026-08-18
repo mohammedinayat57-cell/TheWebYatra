@@ -100,116 +100,213 @@ export default function GetQuote() {
   const toggleFeature = (id: string) =>
     setFeatures(p => p.includes(id) ? p.filter(f => f !== id) : [...p, id]);
 
-  // ── PDF + WhatsApp ─────────────────────────────────────────────────────────
-  const handleGetQuote = async () => {
+  // ── Download PDF (professional SRS-style document) ───────────────────────
+  const downloadPDF = async () => {
     const selectedFeatures = FEATURES.filter(f => features.includes(f.id));
     const included = selectedFeatures.filter(f => f.cost === 0).map(f => f.label);
     const addons   = selectedFeatures.filter(f => f.cost > 0);
     const date = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+    const qno = `TWY-${Date.now().toString().slice(-6)}`;
 
-    // ── Generate PDF ─────────────────────────────────────────────────────────
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ unit: "mm", format: "a4" });
       const W = doc.internal.pageSize.getWidth();
+      const M = 18; // margin
 
-      // Header bar
+      // ── Header ────────────────────────────────────────────────────────────
+      doc.setFillColor(28, 22, 12);
+      doc.rect(0, 0, W, 38, "F");
       doc.setFillColor(196, 150, 106);
-      doc.rect(0, 0, W, 28, "F");
+      doc.rect(0, 35, W, 2.5, "F");
+
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(18); doc.setFont("helvetica", "bold");
-      doc.text("TheWebYatra", 14, 12);
-      doc.setFontSize(9); doc.setFont("helvetica", "normal");
-      doc.text("We Code. You Grow.  |  thewebyatra.com  |  +91 89202 91416", 14, 21);
+      doc.setFontSize(20); doc.setFont("helvetica", "bold");
+      doc.text("TheWebYatra", M, 16);
+      doc.setFontSize(8); doc.setFont("helvetica", "normal");
+      doc.setTextColor(196, 150, 106);
+      doc.text("WE CODE. YOU GROW.  |  thewebyatra.com  |  support@thewebyatra.com  |  +91 89202 91416", M, 24);
+      doc.setTextColor(200, 180, 150);
+      doc.text(`Quotation No: ${qno}  |  Date: ${date}`, M, 30);
 
-      // Title
-      doc.setTextColor(28, 26, 24);
-      doc.setFontSize(15); doc.setFont("helvetica", "bold");
-      doc.text("Project Quote Estimate", 14, 42);
-      doc.setFontSize(9); doc.setFont("helvetica", "normal");
-      doc.setTextColor(107, 87, 68);
-      doc.text(`Prepared for: ${form.name}   |   ${form.phone}   |   Date: ${date}`, 14, 50);
-      if (form.email) doc.text(`Email: ${form.email}`, 14, 57);
+      let y = 52;
 
-      doc.setDrawColor(226, 217, 206);
-      doc.line(14, 63, W - 14, 63);
-      let y = 74;
+      // ── Document Title ────────────────────────────────────────────────────
+      doc.setFontSize(17); doc.setFont("helvetica", "bold");
+      doc.setTextColor(28, 22, 12);
+      doc.text("PROJECT QUOTATION", M, y); y += 4;
+      doc.setDrawColor(196, 150, 106); doc.setLineWidth(0.8);
+      doc.line(M, y, M + 60, y); y += 10;
 
-      const row = (label: string, val: string, note: string, nc?: [number, number, number]) => {
-        doc.setFontSize(9.5); doc.setFont("helvetica", "bold");
-        doc.setTextColor(28, 26, 24); doc.text(label, 14, y);
-        doc.setFont("helvetica", "normal"); doc.setTextColor(60, 48, 38); doc.text(val, 65, y);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...(nc ?? [196, 150, 106] as [number, number, number]));
-        doc.text(note, W - 14, y, { align: "right" });
-        y += 9;
-      };
+      // ── Client Details ────────────────────────────────────────────────────
+      doc.setFillColor(252, 248, 242);
+      doc.roundedRect(M, y, W - M * 2, 28, 3, 3, "F");
+      doc.setDrawColor(226, 212, 190); doc.setLineWidth(0.3);
+      doc.roundedRect(M, y, W - M * 2, 28, 3, 3, "S");
+      doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
+      doc.text("CLIENT DETAILS", M + 6, y + 8);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 40, 20);
+      doc.text(`Name:   ${form.name || "—"}`, M + 6, y + 16);
+      doc.text(`Phone:  ${form.phone || "—"}`, M + 6, y + 22);
+      if (form.email) doc.text(`Email:  ${form.email}`, M + 80, y + 16);
+      y += 36;
 
-      doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 26, 24);
-      doc.text("Breakdown", 14, y); y += 6;
-      doc.setDrawColor(226, 217, 206); doc.line(14, y, W - 14, y); y += 8;
+      // ── Project Scope ─────────────────────────────────────────────────────
+      doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
+      doc.text("PROJECT SCOPE", M, y); y += 2;
+      doc.setLineWidth(0.3); doc.setDrawColor(226, 212, 190);
+      doc.line(M, y, W - M, y); y += 8;
 
-      row("Project Type", `${projectType?.label ?? "—"}`, fmt(basePrice));
-      row("Pages", `${pagesOption?.label ?? "—"}`, pagesExtra > 0 ? `+${fmt(pagesExtra)}` : "Included", pagesExtra === 0 ? [34, 197, 94] : undefined);
-      row("Timeline", `${timelineOpt?.label ?? "—"}`,
-        timelineMod > 0 ? `+${fmt(timelineMod)} rush fee` : timelineMod < 0 ? `-${fmt(Math.abs(timelineMod))} discount` : "No change",
-        timelineMod < 0 ? [34, 197, 94] : timelineMod > 0 ? [239, 68, 68] : undefined);
-      if (featureTotal > 0) row("Add-ons", `${addons.length} selected`, `+${fmt(featureTotal)}`);
+      const tableData = [
+        ["Project Type",  `${projectType?.label ?? "—"}`,  fmt(basePrice)],
+        ["Page Count",    `${pagesOption?.label ?? "—"}`,   pagesExtra > 0 ? `+${fmt(pagesExtra)}` : "Included"],
+        ["Timeline",      `${timelineOpt?.label ?? "—"}`,   timelineMod > 0 ? `+${fmt(timelineMod)} rush` : timelineMod < 0 ? `-${fmt(Math.abs(timelineMod))} disc.` : "No change"],
+      ];
 
-      y += 4;
-      doc.setDrawColor(196, 150, 106); doc.setLineWidth(0.5);
-      doc.line(14, y, W - 14, y); doc.setLineWidth(0.2); y += 6;
+      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
+      doc.text("ITEM", M, y); doc.text("DETAIL", M + 55, y); doc.text("AMOUNT", W - M, y, { align: "right" });
+      y += 2; doc.line(M, y, W - M, y); y += 7;
 
-      // Total box
-      doc.setFillColor(248, 245, 240);
-      doc.roundedRect(14, y, W - 28, 20, 3, 3, "F");
-      doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 26, 24);
-      doc.text("Estimated Total", 20, y + 9);
-      doc.setFontSize(14); doc.setTextColor(139, 94, 60);
-      doc.text(fmt(totalPrice), W - 20, y + 9, { align: "right" });
-      doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.setTextColor(156, 136, 120);
-      doc.text(`~ $${usdPrice} USD`, W - 20, y + 16, { align: "right" });
-      y += 28;
+      tableData.forEach(([item, detail, amount]) => {
+        doc.setFont("helvetica", "normal"); doc.setTextColor(40, 30, 15);
+        doc.text(item, M, y); doc.text(detail, M + 55, y);
+        doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
+        doc.text(amount, W - M, y, { align: "right" });
+        y += 8;
+      });
 
-      // Included features
+      if (featureTotal > 0) {
+        doc.setFont("helvetica", "normal"); doc.setTextColor(40, 30, 15);
+        doc.text("Add-on Features", M, y); doc.text(`${addons.length} selected`, M + 55, y);
+        doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
+        doc.text(`+${fmt(featureTotal)}`, W - M, y, { align: "right" });
+        y += 8;
+      }
+
+      doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 6;
+
+      // ── Total ──────────────────────────────────────────────────────────────
+      doc.setFillColor(28, 22, 12);
+      doc.roundedRect(M, y, W - M * 2, 18, 3, 3, "F");
+      doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(255, 255, 255);
+      doc.text("TOTAL ESTIMATE", M + 6, y + 7);
+      doc.setFontSize(15); doc.setTextColor(196, 150, 106);
+      doc.text(fmt(totalPrice), W - M - 4, y + 8, { align: "right" });
+      doc.setFontSize(8); doc.setTextColor(180, 160, 130);
+      doc.text(`(~ $${usdPrice} USD)`, W - M - 4, y + 15, { align: "right" });
+      y += 26;
+
+      // ── Always Included ───────────────────────────────────────────────────
       if (included.length) {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 26, 24);
-        doc.text("Always Included (Free)", 14, y); y += 7;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(34, 197, 94);
-        included.forEach(l => { doc.text(`✓  ${l}`, 18, y); y += 6; }); y += 3;
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
+        doc.text("ALWAYS INCLUDED (FREE)", M, y); y += 2;
+        doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 7;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(34, 120, 60);
+        const half = Math.ceil(included.length / 2);
+        included.forEach((l, i) => {
+          const col = i < half ? M : M + (W - M * 2) / 2;
+          const row = y + (i < half ? i : i - half) * 6;
+          doc.text(`✓  ${l}`, col, row);
+        });
+        y += Math.ceil(included.length / 2) * 6 + 6;
       }
 
-      // Add-ons
+      // ── Selected Add-ons ──────────────────────────────────────────────────
       if (addons.length) {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 26, 24);
-        doc.text("Selected Add-ons", 14, y); y += 7;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(196, 150, 106);
-        addons.forEach(f => { doc.text(`+  ${f.label}  (+${fmt(f.cost)})`, 18, y); y += 6; }); y += 3;
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
+        doc.text("SELECTED ADD-ONS", M, y); y += 2;
+        doc.setLineWidth(0.3); doc.line(M, y, W - M, y); y += 7;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+        addons.forEach(f => {
+          doc.setTextColor(80, 50, 20); doc.text(`+  ${f.label}`, M, y);
+          doc.setTextColor(139, 94, 60); doc.text(`+${fmt(f.cost)}`, W - M, y, { align: "right" });
+          y += 7;
+        });
+        y += 4;
       }
 
-      // Notes
+      // ── Project Notes ─────────────────────────────────────────────────────
       if (form.description) {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 26, 24);
-        doc.text("Project Notes", 14, y); y += 7;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 48, 38);
-        const lines = doc.splitTextToSize(form.description, W - 28);
-        doc.text(lines, 14, y); y += lines.length * 6 + 4;
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
+        doc.text("PROJECT NOTES", M, y); y += 2;
+        doc.line(M, y, W - M, y); y += 7;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 40, 20);
+        const lines = doc.splitTextToSize(form.description, W - M * 2);
+        doc.text(lines, M, y); y += lines.length * 6 + 6;
       }
 
-      // Footer
-      doc.setDrawColor(226, 217, 206); doc.line(14, y, W - 14, y); y += 7;
-      doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(156, 136, 120);
-      doc.text("Final price may vary depending on exact requirements. This is a non-binding estimate.", 14, y); y += 5;
-      doc.text("TheWebYatra  |  support@thewebyatra.com  |  +91 89202 91416", 14, y);
+      // ── Terms ─────────────────────────────────────────────────────────────
+      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
+      doc.text("TERMS & CONDITIONS", M, y); y += 2;
+      doc.line(M, y, W - M, y); y += 7;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(100, 80, 60);
+      const terms = [
+        "1. This quotation is valid for 30 days from the date of issue.",
+        "2. Final price may vary based on exact scope and requirements.",
+        "3. 50% advance payment required to commence work.",
+        "4. Delivery timeline begins after advance payment and requirement sign-off.",
+        "5. All source code, designs and assets will be handed over upon full payment.",
+      ];
+      terms.forEach(t => { doc.text(t, M, y); y += 6; });
+      y += 4;
 
-      doc.save(`TheWebYatra_Quote_${form.name.replace(/\s+/g, "_") || "Client"}.pdf`);
+      // ── Footer ────────────────────────────────────────────────────────────
+      doc.setLineWidth(0.5); doc.setDrawColor(196, 150, 106);
+      doc.line(M, y, W - M, y); y += 6;
+      doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(140, 110, 70);
+      doc.text("Thank you for choosing TheWebYatra. We look forward to building something great together!", M, y);
+      y += 5;
+      doc.setFont("helvetica", "normal"); doc.setTextColor(160, 130, 90);
+      doc.text(`Quotation No: ${qno}  |  support@thewebyatra.com  |  +91 89202 91416  |  thewebyatra.com`, M, y);
+
+      doc.save(`TheWebYatra_Quotation_${form.name.replace(/\s+/g, "_") || "Client"}_${qno}.pdf`);
     } catch (err) {
       console.error("PDF error:", err);
+      alert("PDF generation failed. Please try again.");
     }
+  };
 
-    // ── Open WhatsApp ─────────────────────────────────────────────────────────
-    const waMessage = `Hi! I've just downloaded my PDF quotation from TheWebYatra website. Please find it attached.\n\n*Project:* ${projectType?.label ?? "—"}\n*Total Estimate:* ${fmt(totalPrice)}\n*Name:* ${form.name}\n*Phone:* ${form.phone}\n\nLooking forward to working with you! 🚀`;
-    window.open(`https://wa.me/918920291416?text=${encodeURIComponent(waMessage)}`, "_blank");
+  // ── Send full quote on WhatsApp (all details in message) ──────────────────
+  const sendOnWhatsApp = () => {
+    const selectedFeatures = FEATURES.filter(f => features.includes(f.id));
+    const allFeaturesList = selectedFeatures.map(f =>
+      `  • ${f.label}${f.cost > 0 ? ` (+${fmt(f.cost)})` : " ✓ FREE"}`
+    ).join("\n");
+
+    const msg = [
+      `*📄 Project Quote — TheWebYatra*`,
+      `────────────────────────────`,
+      ``,
+      `*👤 Client Details*`,
+      `Name: ${form.name}`,
+      `Phone: ${form.phone}`,
+      form.email ? `Email: ${form.email}` : "",
+      ``,
+      `*🛠 Project Details*`,
+      `Type: ${projectType?.label ?? "—"}  (${fmt(basePrice)})`,
+      `Pages: ${pagesOption?.label ?? "—"}${pagesExtra > 0 ? `  (+${fmt(pagesExtra)})` : "  (Included)"}`,
+      `Timeline: ${timelineOpt?.label ?? "—"}${timelineMod !== 0 ? `  (${timelineMod > 0 ? "+" : ""}${fmt(timelineMod)})` : ""}`,
+      ``,
+      `*✅ Features Included*`,
+      allFeaturesList,
+      ``,
+      `*💰 Pricing Breakdown*`,
+      `Base Price: ${fmt(basePrice)}`,
+      pagesExtra > 0 ? `Pages Add-on: +${fmt(pagesExtra)}` : "",
+      featureTotal > 0 ? `Add-on Features: +${fmt(featureTotal)}` : "",
+      timelineMod !== 0 ? `Timeline Adjustment: ${timelineMod > 0 ? "+" : ""}${fmt(timelineMod)}` : "",
+      `────────────────────────────`,
+      `*TOTAL ESTIMATE: ${fmt(totalPrice)}*`,
+      `*(~ $${usdPrice} USD)*`,
+      ``,
+      form.description ? `*📝 Notes:*\n${form.description}\n` : "",
+      `*Terms:* 50% advance to start · Valid 30 days`,
+      ``,
+      `_TheWebYatra — We Code. You Grow._`,
+      `support@thewebyatra.com | +91 89202 91416`,
+    ].filter(Boolean).join("\n");
+
+    window.open(`https://wa.me/918920291416?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   // ── Styles ─────────────────────────────────────────────────────────────────
@@ -508,13 +605,24 @@ export default function GetQuote() {
                     Final price may vary depending on exact requirements.
                   </p>
 
-                  {/* Primary CTA — PDF + WhatsApp */}
-                  <button onClick={handleGetQuote}
-                    className="flex items-center justify-center gap-2.5 w-full py-4 rounded-full font-bold text-white text-base transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(37,211,102,0.38)] active:scale-95 mb-3"
-                    style={{ background: "linear-gradient(135deg,#25D366,#128C7E)" }}>
-                    <FileDown size={18} />
-                    Get My Quote (PDF + WhatsApp)
+                  {/* Two separate action buttons */}
+                  <button onClick={downloadPDF}
+                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-full font-bold text-white text-base transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(196,150,106,0.35)] mb-3"
+                    style={{ background: "linear-gradient(135deg, #8B5E3C, #C4966A)" }}>
+                    <FileDown size={17} />
+                    Download PDF Quotation
                   </button>
+
+                  <button onClick={sendOnWhatsApp}
+                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-full font-bold text-white text-base transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(37,211,102,0.38)] mb-3"
+                    style={{ background: "linear-gradient(135deg,#25D366,#128C7E)" }}>
+                    <MessageCircle size={17} />
+                    Send Full Quote on WhatsApp
+                  </button>
+
+                  <p className="text-stone-400 dark:text-stone-600 text-xs text-center">
+                    PDF downloads to your device · WhatsApp message includes all details
+                  </p>
 
                   {/* Secondary — talk directly */}
                   <a href="https://wa.me/918920291416" target="_blank" rel="noopener noreferrer"
