@@ -358,7 +358,7 @@ export default function GetQuote() {
                     <div className="space-y-2 pb-3 border-b border-warm-400/15">
                       <SumRow label="Base Price" value={`${projectType?.emoji} ${projectType?.label ?? "—"}`} note={fmt(basePrice)} />
                       {pagesExtra > 0 && <SumRow label="Pages" value={pagesOption?.label ?? "—"} note={`+${fmt(pagesExtra)}`} />}
-                      {featureTotal > 0 && <SumRow label="Add-ons" value={`${features.filter(id => FEATURES.find(f=>f.id===id&&f.cost>0)).length} feature(s)`} note={`+${fmt(featureTotal)}`} />}
+                      {featureTotal > 0 && <SumRow label="Add-ons" value={`${features.filter((id: string) => FEATURES.find(f => f.id === id && f.cost > 0)).length} feature(s)`} note={`+${fmt(featureTotal)}`} />}
                       {timelineMod !== 0 && <SumRow label="Timeline" value={timelineOpt?.label ?? "—"}
                         note={timelineMod > 0 ? `+${fmt(timelineMod)} rush` : `-${fmt(Math.abs(timelineMod))} disc.`}
                         green={timelineMod < 0} red={timelineMod > 0} />}

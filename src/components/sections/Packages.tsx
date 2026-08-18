@@ -94,13 +94,13 @@ export default function Packages() {
             <Zap size={13} /> Transparent Pricing
           </div>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-stone-900 dark:text-cream-100 mb-4 leading-tight">
-            Packages with{" "}
+            Common Packages,{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-warm-500 via-warm-600 to-warm-800 dark:from-warm-400 dark:via-warm-500 dark:to-warm-600">
-              No Surprises
+              Honest Prices
             </span>
           </h2>
           <p className="text-stone-600 dark:text-stone-400 text-base md:text-lg max-w-2xl mx-auto">
-            Clear, straightforward pricing in INR. Every digital journey starts with the right package.
+            Affordable, transparent pricing for Indian businesses. All prices in INR — starting from, not fixed.
           </p>
         </motion.div>
 
