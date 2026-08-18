@@ -133,10 +133,42 @@ export default function HeroScene() {
   }, []);
 
   return (
-    <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 0, 6], fov: 50 }} gl={{ antialias: true, alpha: true }} dpr={[1, 2]}>
-        <Scene mousePos={mousePos} />
-      </Canvas>
+    <div className="w-full h-full relative flex flex-col items-center">
+      {/* Globe canvas — takes up most space */}
+      <div className="w-full flex-1">
+        <Canvas camera={{ position: [0, 0, 6], fov: 50 }} gl={{ antialias: true, alpha: true }} dpr={[1, 2]}>
+          <Scene mousePos={mousePos} />
+        </Canvas>
+      </div>
+
+      {/* Stand — purely CSS, doesn't touch the 3D globe */}
+      <div className="flex flex-col items-center pointer-events-none select-none" style={{ marginTop: "-32px" }}>
+        {/* Meridian arc ring */}
+        <div className="w-24 h-6 rounded-full border-2 border-warm-400/40 dark:border-warm-400/30"
+          style={{
+            borderRadius: "50%",
+            width: "80px", height: "14px",
+            borderColor: "rgba(196,150,106,0.4)",
+            background: "transparent",
+            boxShadow: "0 2px 8px rgba(196,150,106,0.15)",
+          }} />
+        {/* Vertical rod */}
+        <div style={{
+          width: "3px",
+          height: "48px",
+          background: "linear-gradient(to bottom, #C4966A, #8B5E3C)",
+          borderRadius: "2px",
+          boxShadow: "0 2px 8px rgba(196,150,106,0.25)",
+        }} />
+        {/* Base disc */}
+        <div style={{
+          width: "64px",
+          height: "10px",
+          background: "linear-gradient(135deg, #C4966A, #8B5E3C)",
+          borderRadius: "8px",
+          boxShadow: "0 4px 16px rgba(196,150,106,0.35), 0 1px 0 rgba(255,255,255,0.1) inset",
+        }} />
+      </div>
     </div>
   );
 }
