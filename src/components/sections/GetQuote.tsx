@@ -43,9 +43,9 @@ const FEATURES: Feature[] = [
   { id: "admin",       label: "Admin Panel",                    cost: 8000, included: false },
   { id: "blog",        label: "Blog / News Section",            cost: 3000, included: false },
   { id: "adv-seo",     label: "Advanced SEO",                   cost: 5000, included: false },
-  { id: "livechat",    label: "Live Chat / Chat Widget",        cost: 2000, included: false },
+  { id: "livechat",    label: "Live Chat / Chat Widget",        cost: 5000, included: false },
   { id: "auth",        label: "User Login / Authentication",    cost: 7000, included: false },
-  { id: "multilang",   label: "Multi-language Support",         cost: 5000, included: false },
+  { id: "multilang",   label: "Multi-language Support",         cost: 2000, included: false },
 ];
 
 // ─── Step 4 data ───────────────────────────────────────────────────────────────
@@ -95,8 +95,22 @@ export default function GetQuote() {
     return true;
   }, [step, projectId, pagesId, timelineId, form]);
 
-  const next         = () => { if (canNext()) setStep(s => Math.min(s + 1, 5)); };
-  const back         = () => setStep(s => Math.max(s - 1, 0));
+  const next = () => {
+    if (canNext()) {
+      setStep(s => Math.min(s + 1, 5));
+      setTimeout(() => {
+        const el = document.getElementById("quote");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  };
+  const back = () => {
+    setStep(s => Math.max(s - 1, 0));
+    setTimeout(() => {
+      const el = document.getElementById("quote");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
   const toggleFeature = (id: string) =>
     setFeatures(p => p.includes(id) ? p.filter(f => f !== id) : [...p, id]);
 
@@ -383,41 +397,54 @@ export default function GetQuote() {
   const sendOnWhatsApp = () => {
     const selectedFeatures = FEATURES.filter(f => features.includes(f.id));
     const allFeaturesList = selectedFeatures.map(f =>
-      `  • ${f.label}${f.cost > 0 ? ` (+${fmt(f.cost)})` : " ✓ FREE"}`
+      `  • ${f.label}${f.cost > 0 ? `  →  +${fmt(f.cost)}` : "  →  FREE ✓"}`
     ).join("\n");
+    const date = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+    const qno  = `TWY-${Date.now().toString().slice(-6)}`;
 
     const msg = [
-      `*📄 Project Quote — TheWebYatra*`,
-      `────────────────────────────`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━`,
+      `🏢  *TheWebYatra — Project Quote*`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━`,
       ``,
-      `*👤 Client Details*`,
-      `Name: ${form.name}`,
-      `Phone: ${form.phone}`,
-      form.email ? `Email: ${form.email}` : "",
+      `📋  *QUOTE DETAILS*`,
+      `Quote No:   ${qno}`,
+      `Date:          ${date}`,
       ``,
-      `*🛠 Project Details*`,
-      `Type: ${projectType?.label ?? "—"}  (${fmt(basePrice)})`,
-      `Pages: ${pagesOption?.label ?? "—"}${pagesExtra > 0 ? `  (+${fmt(pagesExtra)})` : "  (Included)"}`,
-      `Timeline: ${timelineOpt?.label ?? "—"}${timelineMod !== 0 ? `  (${timelineMod > 0 ? "+" : ""}${fmt(timelineMod)})` : ""}`,
+      `👤  *CLIENT*`,
+      `Name:       ${form.name}`,
+      `Phone:      ${form.phone}`,
+      form.email ? `Email:        ${form.email}` : ``,
       ``,
-      `*✅ Features Included*`,
+      `🛠  *PROJECT SCOPE*`,
+      `Type:          ${projectType?.label ?? "—"}`,
+      `Pages:        ${pagesOption?.label ?? "—"}`,
+      `Timeline:    ${timelineOpt?.label ?? "—"}`,
+      ``,
+      `✅  *FEATURES INCLUDED*`,
       allFeaturesList,
       ``,
-      `*💰 Pricing Breakdown*`,
-      `Base Price: ${fmt(basePrice)}`,
-      pagesExtra > 0 ? `Pages Add-on: +${fmt(pagesExtra)}` : "",
-      featureTotal > 0 ? `Add-on Features: +${fmt(featureTotal)}` : "",
-      timelineMod !== 0 ? `Timeline Adjustment: ${timelineMod > 0 ? "+" : ""}${fmt(timelineMod)}` : "",
-      `────────────────────────────`,
-      `*TOTAL ESTIMATE: ${fmt(totalPrice)}*`,
-      `*(~ $${usdPrice} USD)*`,
+      `💰  *PRICING BREAKDOWN*`,
+      `Base Price:              ${fmt(basePrice)}`,
+      pagesExtra > 0      ? `Pages Add-on:         +${fmt(pagesExtra)}` : ``,
+      featureTotal > 0    ? `Add-on Features:     +${fmt(featureTotal)}` : ``,
+      timelineMod > 0     ? `Rush Fee:                +${fmt(timelineMod)}` : ``,
+      timelineMod < 0     ? `Flexible Discount:   -${fmt(Math.abs(timelineMod))}` : ``,
       ``,
-      form.description ? `*📝 Notes:*\n${form.description}\n` : "",
-      `*Terms:* 50% advance to start · Valid 30 days`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━`,
+      `💵  *TOTAL ESTIMATE:  ${fmt(totalPrice)}*`,
+      `         *(approx. $${usdPrice} USD)*`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━`,
+      ``,
+      form.description ? `📝  *PROJECT NOTES*\n${form.description}\n` : ``,
+      `⚠️  *NOTE:*  Domain, hosting, server & database charges are NOT included.`,
+      `✅  1 Month FREE post-launch maintenance included.`,
+      `📄  Terms: 50% advance | Valid 30 days`,
       ``,
       `_TheWebYatra — We Code. You Grow._`,
-      `support@thewebyatra.com | +91 89202 91416`,
-    ].filter(Boolean).join("\n");
+      `📧  support@thewebyatra.com`,
+      `📞  +91 89202 91416`,
+    ].filter(l => l !== undefined && l !== ``).join("\n");
 
     window.open(`https://wa.me/918920291416?text=${encodeURIComponent(msg)}`, "_blank");
   };
