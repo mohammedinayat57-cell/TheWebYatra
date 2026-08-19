@@ -89,17 +89,6 @@ export default function Hero() {
                   <LinkedInIcon size={16} />
                 </a>
               </div>
-              <div className="h-5 w-px bg-cream-400 dark:bg-dark-50" />
-              {[
-                { value: "50+", label: "Projects" },
-                { value: "100%", label: "On-time" },
-                { value: "5★", label: "Rated" },
-              ].map((s) => (
-                <div key={s.label} className="flex flex-col">
-                  <span className="font-display text-xl font-bold gradient-text leading-none">{s.value}</span>
-                  <span className="text-stone-500 dark:text-stone-600 text-xs mt-0.5">{s.label}</span>
-                </div>
-              ))}
             </motion.div>
           </div>
 

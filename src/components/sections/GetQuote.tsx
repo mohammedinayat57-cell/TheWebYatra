@@ -25,27 +25,27 @@ const PAGES_OPTIONS = [
 ] as const;
 
 // ─── Step 3 data ───────────────────────────────────────────────────────────────
-interface Feature { id: string; label: string; cost: number; _included: boolean; }
+interface Feature { id: string; label: string; cost: number; included: boolean; }
 
 const FEATURES: Feature[] = [
   // Always _included — ₹0
-  { id: "responsive",  label: "Mobile Responsive Design",       cost: 0,    _included: true  },
-  { id: "basic-seo",   label: "Basic SEO Setup",                cost: 0,    _included: true  },
-  { id: "contact",     label: "Contact Form",                   cost: 0,    _included: true  },
-  { id: "ssl",         label: "SSL / HTTPS",                    cost: 0,    _included: true  },
-  { id: "social-link", label: "Social Media Links",             cost: 0,    _included: true  },
-  { id: "maps",        label: "Google Maps / Location",         cost: 0,    _included: true  },
-  { id: "perf",        label: "Basic Performance Optimization", cost: 0,    _included: true  },
-  { id: "social-int",  label: "Social Media Integration",       cost: 0,    _included: true  },
+  { id: "responsive",  label: "Mobile Responsive Design",       cost: 0,    included: true  },
+  { id: "basic-seo",   label: "Basic SEO Setup",                cost: 0,    included: true  },
+  { id: "contact",     label: "Contact Form",                   cost: 0,    included: true  },
+  { id: "ssl",         label: "SSL / HTTPS",                    cost: 0,    included: true  },
+  { id: "social-link", label: "Social Media Links",             cost: 0,    included: true  },
+  { id: "maps",        label: "Google Maps / Location",         cost: 0,    included: true  },
+  { id: "perf",        label: "Basic Performance Optimization", cost: 0,    included: true  },
+  { id: "social-int",  label: "Social Media Integration",       cost: 0,    included: true  },
   // Optional add-ons
-  { id: "whatsapp",    label: "WhatsApp Integration",           cost: 0,    _included: true  },
-  { id: "payment",     label: "Payment Gateway",                cost: 5000, _included: false },
-  { id: "admin",       label: "Admin Panel",                    cost: 8000, _included: false },
-  { id: "blog",        label: "Blog / News Section",            cost: 3000, _included: false },
-  { id: "adv-seo",     label: "Advanced SEO",                   cost: 5000, _included: false },
-  { id: "livechat",    label: "Live Chat / Chat Widget",        cost: 2000, _included: false },
-  { id: "auth",        label: "User Login / Authentication",    cost: 7000, _included: false },
-  { id: "multilang",   label: "Multi-language Support",         cost: 5000, _included: false },
+  { id: "whatsapp",    label: "WhatsApp Integration",           cost: 0,    included: true  },
+  { id: "payment",     label: "Payment Gateway",                cost: 5000, included: false },
+  { id: "admin",       label: "Admin Panel",                    cost: 8000, included: false },
+  { id: "blog",        label: "Blog / News Section",            cost: 3000, included: false },
+  { id: "adv-seo",     label: "Advanced SEO",                   cost: 5000, included: false },
+  { id: "livechat",    label: "Live Chat / Chat Widget",        cost: 2000, included: false },
+  { id: "auth",        label: "User Login / Authentication",    cost: 7000, included: false },
+  { id: "multilang",   label: "Multi-language Support",         cost: 5000, included: false },
 ];
 
 // ─── Step 4 data ───────────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ export default function GetQuote() {
   const [projectId,  setProjectId]  = useState("");
   const [pagesId,    setPagesId]    = useState("");
   const [features,   setFeatures]   = useState<string[]>(
-    () => FEATURES.filter(f => f._included).map(f => f.id)
+    () => FEATURES.filter(f => f.included).map(f => f.id)
   );
   const [timelineId, setTimelineId] = useState("");
   const [form,       setForm]       = useState({ name: "", phone: "", email: "", description: "" });
@@ -103,239 +103,282 @@ export default function GetQuote() {
   // ── Download PDF (professional SRS-style document) ───────────────────────
   const downloadPDF = async () => {
     const selectedFeatures = FEATURES.filter(f => features.includes(f.id));
-    const included = selectedFeatures.filter(f => f.cost === 0).map(f => f.label);
-    const addons   = selectedFeatures.filter(f => f.cost > 0);
+    const freeFeatures = selectedFeatures.filter(f => f.cost === 0).map(f => f.label);
+    const paidFeatures = selectedFeatures.filter(f => f.cost > 0);
     const date = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
-    const qno  = `TWY-${Date.now().toString().slice(-6)}`;
+    const qno  = "TWY-" + Date.now().toString().slice(-6);
 
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ unit: "mm", format: "a4" });
-      const W   = doc.internal.pageSize.getWidth();   // 210mm
-      const M   = 15;  // left margin
-      const RM  = W - M; // right margin position
+      const PW = 210; const PH = 297;
+      const ML = 15; const MR = 15;
+      const CW = PW - ML - MR; // content width = 180mm
+      const PR = PW - MR;      // right edge
 
-      // ─────────────────────────────────────────────────────────────
-      // HEADER
-      // ─────────────────────────────────────────────────────────────
-      doc.setFillColor(28, 22, 12);
-      doc.rect(0, 0, W, 32, "F");
-      doc.setFillColor(196, 150, 106);
-      doc.rect(0, 29, W, 2, "F");
+      let y = 0;
+      let page = 1;
 
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(18); doc.setFont("helvetica", "bold");
-      doc.text("TheWebYatra", M, 13);
-      doc.setFontSize(7.5); doc.setFont("helvetica", "normal");
-      doc.setTextColor(196, 150, 106);
-      doc.text("WE CODE. YOU GROW.", M, 19);
-      doc.setTextColor(180, 160, 130);
-      doc.text(`thewebyatra.com  |  support@thewebyatra.com  |  +91 89202 91416`, M, 25);
-
-      // Right side: Quote No + Date
-      doc.setFont("helvetica", "bold"); doc.setTextColor(255, 255, 255);
-      doc.setFontSize(8);
-      doc.text(`Quote No: ${qno}`, RM, 13, { align: "right" });
-      doc.setFont("helvetica", "normal");
-      doc.text(`Date: ${date}`, RM, 19, { align: "right" });
-
-      let y = 42;
-
-      // ─────────────────────────────────────────────────────────────
-      // DOCUMENT TITLE
-      // ─────────────────────────────────────────────────────────────
-      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(28, 22, 12);
-      doc.text("SOFTWARE REQUIREMENTS & QUOTATION DOCUMENT", M, y); y += 3;
-      doc.setLineWidth(0.6); doc.setDrawColor(196, 150, 106);
-      doc.line(M, y, RM, y); y += 8;
-
-      // ─────────────────────────────────────────────────────────────
-      // CLIENT DETAILS BOX
-      // ─────────────────────────────────────────────────────────────
-      doc.setFillColor(252, 248, 242);
-      doc.setLineWidth(0.25); doc.setDrawColor(220, 200, 170);
-      doc.roundedRect(M, y, W - M * 2, 24, 2, 2, "FD");
-      doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-      doc.text("PREPARED FOR", M + 4, y + 7);
-      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(40, 25, 10);
-      doc.text(form.name || "—", M + 4, y + 14);
-      doc.setFontSize(8); doc.setTextColor(80, 60, 40);
-      doc.text(`Phone: ${form.phone}${form.email ? "   |   Email: " + form.email : ""}`, M + 4, y + 20);
-      y += 30;
-
-      // ─────────────────────────────────────────────────────────────
-      // SECTION 1 — PROJECT SCOPE
-      // ─────────────────────────────────────────────────────────────
-      const sectionTitle = (title: string) => {
-        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-        doc.text(title, M, y); y += 1.5;
-        doc.setLineWidth(0.25); doc.setDrawColor(220, 200, 170);
-        doc.line(M, y, RM, y); y += 5;
+      // ── helpers ────────────────────────────────────────────────────────
+      const newPage = () => {
+        doc.addPage();
+        page++;
+        y = 15;
+        // page number footer
+        doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(160,130,90);
+        doc.text(`TheWebYatra  |  ${qno}  |  Page ${page}`, PW/2, PH - 8, { align: "center" });
       };
 
-      sectionTitle("1. PROJECT SCOPE");
-
-      // Table header
-      const col1 = M, col2 = M + 52, col3 = M + 110, col4 = RM;
-      doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
-      doc.setFillColor(245, 238, 225);
-      doc.rect(M, y - 2, W - M * 2, 8, "F");
-      doc.text("ITEM", col1 + 2, y + 4);
-      doc.text("SPECIFICATION", col2, y + 4);
-      doc.text("REMARKS", col3, y + 4);
-      doc.text("AMOUNT", col4, y + 4, { align: "right" });
-      y += 9;
-      doc.setLineWidth(0.2); doc.line(M, y - 1, RM, y - 1);
-
-      const tableRow = (item: string, spec: string, remark: string, amount: string, shade = false) => {
-        if (shade) { doc.setFillColor(250, 246, 240); doc.rect(M, y - 2, W - M * 2, 8, "F"); }
-        doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(40, 28, 12);
-        doc.text(item, col1 + 2, y + 4);
-        doc.text(spec, col2, y + 4);
-        doc.text(remark, col3, y + 4);
-        doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-        doc.text(amount, col4, y + 4, { align: "right" });
-        doc.setLineWidth(0.1); doc.setDrawColor(230, 215, 195);
-        doc.line(M, y + 6, RM, y + 6);
-        y += 8;
+      const checkY = (needed: number) => {
+        if (y + needed > PH - 20) newPage();
       };
 
-      tableRow("Project Type",  projectType?.label ?? "—",    "Base Development",  fmt(basePrice));
-      tableRow("Pages / Screens", pagesOption?.label ?? "—",   "UI Screens",         pagesExtra > 0 ? `+${fmt(pagesExtra)}` : "Included", true);
-      tableRow("Timeline",       timelineOpt?.label ?? "—",    "Delivery Schedule",
-        timelineMod > 0 ? `+${fmt(timelineMod)} rush` : timelineMod < 0 ? `-${fmt(Math.abs(timelineMod))}` : "Standard");
+      const secTitle = (n: string, title: string) => {
+        checkY(14);
+        doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+        doc.text(n + ".  " + title, ML, y); y += 2;
+        doc.setLineWidth(0.3); doc.setDrawColor(196,150,106);
+        doc.line(ML, y, PR, y); y += 6;
+      };
 
-      if (featureTotal > 0) {
-        tableRow("Add-on Features", `${addons.length} feature(s)`, "Extra Modules", `+${fmt(featureTotal)}`, true);
+      // ── PAGE 1 HEADER ──────────────────────────────────────────────────
+      doc.setFillColor(28,22,12);
+      doc.rect(0,0,PW,30,"F");
+      doc.setFillColor(196,150,106);
+      doc.rect(0,28,PW,1.5,"F");
+
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(17); doc.setFont("helvetica","bold");
+      doc.text("TheWebYatra", ML, 12);
+      doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(196,150,106);
+      doc.text("WE CODE. YOU GROW.", ML, 18);
+      doc.setTextColor(170,150,120);
+      doc.text("thewebyatra.com  |  support@thewebyatra.com  |  +91 89202 91416", ML, 24);
+
+      doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255); doc.setFontSize(8);
+      doc.text("Quote No: " + qno, PR, 12, { align:"right" });
+      doc.setFont("helvetica","normal"); doc.setTextColor(196,150,106);
+      doc.text("Date: " + date, PR, 18, { align:"right" });
+
+      // Page 1 footer
+      doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(160,130,90);
+      doc.text("TheWebYatra  |  " + qno + "  |  Page 1", PW/2, PH-8, { align:"center" });
+
+      y = 38;
+
+      // ── DOCUMENT TITLE ─────────────────────────────────────────────────
+      doc.setFontSize(13); doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+      doc.text("SOFTWARE REQUIREMENTS & QUOTATION DOCUMENT", ML, y); y+=3;
+      doc.setLineWidth(0.5); doc.setDrawColor(196,150,106);
+      doc.line(ML, y, PR, y); y+=8;
+
+      // ── COVER INFO BOX ─────────────────────────────────────────────────
+      doc.setFillColor(252,248,242);
+      doc.setLineWidth(0.2); doc.setDrawColor(220,200,170);
+      doc.roundedRect(ML, y, CW, 28, 2, 2, "FD");
+      doc.setFontSize(7.5); doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+      doc.text("PREPARED FOR", ML+4, y+7);
+      doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(28,22,12);
+      doc.text(form.name || "—", ML+4, y+15);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(80,60,40);
+      const clientInfo = "Phone: " + (form.phone || "—") + (form.email ? "   |   Email: " + form.email : "");
+      doc.text(clientInfo, ML+4, y+22);
+      y+=34;
+
+      // ── SECTION 1 — PROJECT SCOPE ──────────────────────────────────────
+      secTitle("1","PROJECT SCOPE & PRICING");
+
+      // Table header row
+      const c1=ML, c2=ML+42, c3=ML+100, c4=PR;
+      doc.setFillColor(235,220,200);
+      doc.rect(ML, y-2, CW, 8, "F");
+      doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(80,50,15);
+      doc.text("ITEM", c1+2, y+4);
+      doc.text("SPECIFICATION", c2, y+4);
+      doc.text("REMARKS", c3, y+4);
+      doc.text("AMOUNT", c4, y+4, {align:"right"});
+      y+=9;
+      doc.setLineWidth(0.2); doc.setDrawColor(210,190,160);
+      doc.line(ML, y-1, PR, y-1);
+
+      const rows = [
+        ["Project Type", (projectType ? projectType.label : "—"), "Base Development", "+" + fmt(basePrice)],
+        ["Pages / Screens", (pagesOption ? pagesOption.label : "—"), "UI Screens", pagesExtra > 0 ? "+" + fmt(pagesExtra) : "Included"],
+        ["Delivery Timeline", (timelineOpt ? timelineOpt.label : "—"), "Schedule", timelineMod > 0 ? "+" + fmt(timelineMod) + " rush" : timelineMod < 0 ? fmt(timelineMod) + " disc." : "Standard"],
+      ];
+      if (paidFeatures.length > 0) {
+        rows.push(["Add-on Features", paidFeatures.length + " module(s)", "Extra Scope", "+" + fmt(featureTotal)]);
       }
 
-      y += 2;
+      rows.forEach(function(row, i) {
+        checkY(9);
+        if (i % 2 === 1) { doc.setFillColor(250,245,238); doc.rect(ML, y-2, CW, 8, "F"); }
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(40,28,12);
+        doc.text(row[0], c1+2, y+4);
+        doc.text(row[1], c2, y+4);
+        doc.text(row[2], c3, y+4);
+        doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+        doc.text(row[3], c4, y+4, {align:"right"});
+        doc.setLineWidth(0.1); doc.setDrawColor(225,210,185);
+        doc.line(ML, y+6, PR, y+6);
+        y+=9;
+      });
 
-      // Total row
-      doc.setFillColor(28, 22, 12);
-      doc.rect(M, y, W - M * 2, 11, "F");
-      doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(255, 255, 255);
-      doc.text("TOTAL DEVELOPMENT ESTIMATE", col1 + 4, y + 7.5);
-      doc.setFontSize(12); doc.setTextColor(196, 150, 106);
-      doc.text(fmt(totalPrice), col4, y + 7.5, { align: "right" });
-      y += 13;
+      y+=4; checkY(14);
 
-      doc.setFontSize(7.5); doc.setFont("helvetica", "italic"); doc.setTextColor(120, 90, 50);
-      doc.text(`(Approx. USD ${usdPrice} at current exchange rate)`, col4, y, { align: "right" });
-      y += 8;
+      // Total box
+      doc.setFillColor(28,22,12);
+      doc.rect(ML, y, CW, 13, "F");
+      doc.setFontSize(9.5); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+      doc.text("TOTAL DEVELOPMENT ESTIMATE", ML+5, y+8.5);
+      doc.setFontSize(11); doc.setTextColor(196,150,106);
+      // Use right-aligned text inside the box properly
+      const totalText = fmt(totalPrice);
+      doc.text(totalText, PR-4, y+8.5, {align:"right"});
+      y+=15;
+      doc.setFontSize(7.5); doc.setFont("helvetica","italic"); doc.setTextColor(120,90,50);
+      doc.text("(Approx. USD " + usdPrice + " at current exchange rate)", PR, y, {align:"right"});
+      y+=10;
 
-      // ─────────────────────────────────────────────────────────────
-      // IMPORTANT NOTE
-      // ─────────────────────────────────────────────────────────────
-      doc.setFillColor(255, 248, 230);
-      doc.setLineWidth(0.3); doc.setDrawColor(220, 170, 80);
-      doc.roundedRect(M, y, W - M * 2, 18, 2, 2, "FD");
-      doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(160, 100, 20);
-      doc.text("⚠  IMPORTANT NOTICE", M + 4, y + 7);
-      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(80, 55, 15);
-      doc.text("This quote covers DEVELOPMENT CHARGES ONLY. Domain registration, hosting/server charges,", M + 4, y + 13);
-      doc.text("third-party API fees, and database hosting costs are NOT included and billed separately.", M + 4, y + 18);
-      y += 24;
+      // ── IMPORTANT NOTICE ───────────────────────────────────────────────
+      checkY(22);
+      doc.setFillColor(255,250,230);
+      doc.setLineWidth(0.3); doc.setDrawColor(210,170,60);
+      doc.roundedRect(ML, y, CW, 18, 2, 2, "FD");
+      doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(150,100,10);
+      doc.text("IMPORTANT NOTICE", ML+4, y+7);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(80,58,10);
+      doc.text("This quotation covers DEVELOPMENT CHARGES ONLY.", ML+4, y+13);
+      doc.text("Domain, hosting, server, database & third-party API costs are NOT included and billed separately.", ML+4, y+18.5);
+      y+=24;
 
-      // ─────────────────────────────────────────────────────────────
-      // SECTION 2 — INCLUDED FEATURES
-      // ─────────────────────────────────────────────────────────────
-      sectionTitle("2. FEATURES INCLUDED IN SCOPE");
+      // ── SECTION 2 — FEATURES ───────────────────────────────────────────
+      checkY(16);
+      secTitle("2","FEATURES INCLUDED IN SCOPE");
 
-      if (included.length) {
-        doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(34, 120, 60);
-        doc.text("Standard Features (Included Free)", M + 2, y); y += 5;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(30, 80, 40);
-        const half = Math.ceil(included.length / 2);
-        included.forEach((l, i) => {
-          const cx = i < half ? M + 2 : M + (W - M * 2) / 2 + 5;
-          const cy = y + (i < half ? i : i - half) * 6;
-          doc.text(`✓  ${l}`, cx, cy);
+      if (freeFeatures.length > 0) {
+        checkY(10);
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(20,130,60);
+        doc.text("Standard Features  —  Always Included (No Extra Charge)", ML+2, y); y+=6;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(30,90,45);
+        const half = Math.ceil(freeFeatures.length / 2);
+        freeFeatures.forEach(function(l, i) {
+          checkY(7);
+          const cx = i < half ? ML+4 : ML + CW/2 + 4;
+          const row2 = i < half ? i : i - half;
+          if (i === half) { /* new column, y stays */ }
+          if (i < half) { doc.text("✓  " + l, cx, y + row2*6); }
+          else { doc.text("✓  " + l, cx, y + row2*6); }
         });
-        y += Math.ceil(included.length / 2) * 6 + 5;
+        y += Math.ceil(freeFeatures.length / 2) * 6 + 6;
       }
 
-      if (addons.length) {
-        doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(139, 94, 60);
-        doc.text("Additional Features (Add-ons)", M + 2, y); y += 5;
-        addons.forEach((f, i) => {
-          const cx = i % 2 === 0 ? M + 2 : M + (W - M * 2) / 2 + 5;
-          if (i % 2 === 0 && i > 0) y += 6;
-          doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(80, 50, 20);
-          doc.text(`+  ${f.label}`, cx, y);
-          doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-          if (i % 2 === 0) doc.text(`+${fmt(f.cost)}`, col4, y, { align: "right" });
+      if (paidFeatures.length > 0) {
+        checkY(10);
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(139,94,60);
+        doc.text("Additional Features  —  Selected Add-ons", ML+2, y); y+=6;
+        paidFeatures.forEach(function(feat, i) {
+          checkY(9);
+          if (i % 2 === 1) { doc.setFillColor(250,245,238); doc.rect(ML, y-2, CW, 8, "F"); }
+          doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(60,38,15);
+          doc.text("  +  " + feat.label, ML+2, y+4);
+          doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+          doc.text("+" + fmt(feat.cost), PR, y+4, {align:"right"});
+          doc.setLineWidth(0.1); doc.setDrawColor(225,210,185);
+          doc.line(ML, y+6, PR, y+6);
+          y+=9;
         });
-        y += 10;
+        y+=4;
       }
 
-      // Free maintenance note
-      doc.setFillColor(240, 252, 245);
-      doc.setLineWidth(0.25); doc.setDrawColor(100, 200, 130);
-      doc.roundedRect(M, y, W - M * 2, 10, 2, 2, "FD");
-      doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(20, 130, 60);
-      doc.text("✓  1 Month FREE Post-Launch Maintenance & Bug Fixes Included", M + 4, y + 6.5);
-      y += 16;
+      // Free maintenance badge
+      checkY(14);
+      doc.setFillColor(238,252,242);
+      doc.setLineWidth(0.3); doc.setDrawColor(80,190,110);
+      doc.roundedRect(ML, y, CW, 11, 2, 2, "FD");
+      doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.setTextColor(15,130,55);
+      doc.text("✓   1 Month FREE Post-Launch Maintenance & Bug Fixes Included", ML+5, y+7.5);
+      y+=17;
 
-      // ─────────────────────────────────────────────────────────────
-      // SECTION 3 — PROJECT NOTES
-      // ─────────────────────────────────────────────────────────────
+      // ── SECTION 3 — CLIENT NOTES ───────────────────────────────────────
       if (form.description) {
-        sectionTitle("3. CLIENT REQUIREMENTS / NOTES");
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(50, 35, 15);
-        const noteLines = doc.splitTextToSize(form.description, W - M * 2 - 4);
-        doc.text(noteLines, M + 2, y);
-        y += noteLines.length * 6 + 8;
+        checkY(16);
+        secTitle("3","CLIENT REQUIREMENTS & NOTES");
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(50,35,15);
+        const noteLines = doc.splitTextToSize(form.description, CW-4);
+        noteLines.forEach(function(line: string) {
+          checkY(7);
+          doc.text(line, ML+2, y); y+=6;
+        });
+        y+=6;
       }
 
-      // ─────────────────────────────────────────────────────────────
-      // SECTION 4 — TERMS & CONDITIONS
-      // ─────────────────────────────────────────────────────────────
-      const termNum = form.description ? "4" : "3";
-      sectionTitle(`${termNum}. TERMS & CONDITIONS`);
+      // ── SECTION 4 — TERMS & CONDITIONS ────────────────────────────────
+      const tNum = form.description ? "4" : "3";
+      checkY(16);
+      secTitle(tNum, "TERMS & CONDITIONS");
 
       const terms = [
-        ["Validity",       "This quotation is valid for 30 days from the date of issue."],
-        ["Advance Payment","50% of the total amount is required before project commencement."],
-        ["Balance Payment","Remaining 50% is due upon project completion before final delivery."],
-        ["Timeline",       "Delivery timeline starts after advance payment and signed requirement confirmation."],
-        ["Scope Changes",  "Any additional features or changes outside this scope will be quoted separately."],
-        ["Exclusions",     "Domain, hosting, server, database, and third-party API costs are NOT included."],
-        ["Maintenance",    "1 month free post-launch bug fixes. Extended maintenance available on request."],
-        ["Ownership",      "Full source code and assets transferred to client upon complete payment."],
+        ["1.  Validity",          "This quotation is valid for 30 days from the date of issue."],
+        ["2.  Advance Payment",   "50% of the total amount is required before project commencement."],
+        ["3.  Balance Payment",   "Remaining 50% is due upon project completion before final delivery."],
+        ["4.  Timeline",          "Delivery timeline starts after advance payment and signed requirement confirmation."],
+        ["5.  Scope Changes",     "Any additional features outside this scope will be quoted separately."],
+        ["6.  Exclusions",        "Domain, hosting, server, database & third-party API costs are NOT included."],
+        ["7.  Maintenance",       "1 month free post-launch bug fixes included. Extended plans available on request."],
       ];
 
-      doc.setFontSize(8.5);
-      terms.forEach(([title, detail], i) => {
-        if (i % 2 === 0) { doc.setFillColor(250, 246, 240); doc.rect(M, y - 2, W - M * 2, 7.5, "F"); }
-        doc.setFont("helvetica", "bold"); doc.setTextColor(100, 70, 30);
-        doc.text(`${i + 1}. ${title}:`, M + 2, y + 3.5);
-        doc.setFont("helvetica", "normal"); doc.setTextColor(50, 35, 15);
-        doc.text(detail, M + 38, y + 3.5);
-        doc.setLineWidth(0.1); doc.setDrawColor(230, 215, 195);
-        doc.line(M, y + 5.5, RM, y + 5.5);
-        y += 8;
+      terms.forEach(function(t, i) {
+        checkY(9);
+        if (i % 2 === 1) { doc.setFillColor(250,245,238); doc.rect(ML, y-2, CW, 8, "F"); }
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(100,68,25);
+        doc.text(t[0], ML+2, y+4);
+        doc.setFont("helvetica","normal"); doc.setTextColor(50,35,15);
+        doc.text(t[1], ML+52, y+4);
+        doc.setLineWidth(0.1); doc.setDrawColor(220,205,180);
+        doc.line(ML, y+6, PR, y+6);
+        y+=9;
       });
-      y += 6;
+      y+=8;
 
-      // ─────────────────────────────────────────────────────────────
-      // FOOTER
-      // ─────────────────────────────────────────────────────────────
-      doc.setLineWidth(0.5); doc.setDrawColor(196, 150, 106);
-      doc.line(M, y, RM, y); y += 6;
-      doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(139, 94, 60);
-      doc.text("Thank you for choosing TheWebYatra. We look forward to building something great together!", M, y);
-      y += 6;
-      doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(140, 110, 70);
-      doc.text(`${qno}  |  support@thewebyatra.com  |  +91 89202 91416  |  thewebyatra.com`, M, y);
+      // ── SIGNATURE SECTION ──────────────────────────────────────────────
+      checkY(35);
+      doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(139,94,60);
+      doc.text("ACCEPTANCE & SIGNATURE", ML, y); y+=2;
+      doc.setLineWidth(0.3); doc.setDrawColor(196,150,106);
+      doc.line(ML, y, PR, y); y+=10;
 
-      doc.save(`TheWebYatra_Quotation_${form.name.replace(/\s+/g, "_") || "Client"}_${qno}.pdf`);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(60,45,25);
+      doc.text("By proceeding with the advance payment, the client agrees to the scope,", ML, y);
+      y+=6;
+      doc.text("pricing, and terms outlined in this document.", ML, y); y+=12;
+
+      const half2 = CW/2 - 10;
+      doc.setLineWidth(0.4); doc.setDrawColor(100,70,30);
+      doc.line(ML, y, ML+half2, y);
+      doc.line(ML+half2+20, y, PR, y);
+      y+=5;
+      doc.setFontSize(7.5); doc.setTextColor(100,75,40);
+      doc.text("Client Signature & Date", ML, y);
+      doc.text("TheWebYatra Authorised Signatory", ML+half2+20, y);
+      y+=14;
+
+      // ── FINAL FOOTER ───────────────────────────────────────────────────
+      checkY(18);
+      doc.setLineWidth(0.5); doc.setDrawColor(196,150,106);
+      doc.line(ML, y, PR, y); y+=6;
+      doc.setFontSize(8.5); doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+      doc.text("Thank you for choosing TheWebYatra. We look forward to building something great together!", ML, y);
+      y+=6;
+      doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(140,110,70);
+      doc.text(qno + "  |  support@thewebyatra.com  |  +91 89202 91416  |  thewebyatra.com", ML, y);
+
+      doc.save("TheWebYatra_Quotation_" + (form.name.replace(/\s+/g,"_") || "Client") + "_" + qno + ".pdf");
     } catch (err) {
       console.error("PDF error:", err);
       alert("PDF generation failed. Please try again.");
     }
   };
-
   // ── Send full quote on WhatsApp (all details in message) ──────────────────
   const sendOnWhatsApp = () => {
     const selectedFeatures = FEATURES.filter(f => features.includes(f.id));
@@ -522,7 +565,7 @@ export default function GetQuote() {
                   <div className="mb-4">
                     <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Always _included (Free)</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {FEATURES.filter(f => f._included).map(f => (
+                      {FEATURES.filter(f => f.included).map(f => (
                         <div key={f.id} className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-900/10 text-green-800 dark:text-green-400 text-xs font-medium">
                           <Check size={10} className="flex-shrink-0 text-green-500" />{f.label}
                         </div>
@@ -533,7 +576,7 @@ export default function GetQuote() {
                   <div>
                     <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Optional Add-Ons</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {FEATURES.filter(f => !f._included).map(f => {
+                      {FEATURES.filter(f => !f.included).map(f => {
                         const on = features.includes(f.id);
                         return (
                           <button key={f.id} onClick={() => toggleFeature(f.id)}
