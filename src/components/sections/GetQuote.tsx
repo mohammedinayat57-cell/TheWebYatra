@@ -121,6 +121,8 @@ export default function GetQuote() {
     const paidFeatures = selectedFeatures.filter(f => f.cost > 0);
     const date = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
     const qno  = "TWY-" + Date.now().toString().slice(-6);
+    // jsPDF cannot render the Rs sign - use Rs. prefix instead
+    const pf = (n: number) => "Rs." + Math.abs(n).toLocaleString("en-IN");
 
     try {
       const { jsPDF } = await import("jspdf");
@@ -210,18 +212,18 @@ export default function GetQuote() {
       doc.text("ITEM", c1+2, y+4);
       doc.text("SPECIFICATION", c2, y+4);
       doc.text("REMARKS", c3, y+4);
-      doc.text("AMOUNT", c4, y+4, {align:"right"});
+      doc.text("AMOUNT", c4-2, y+4, {align:"right"});
       y+=9;
       doc.setLineWidth(0.2); doc.setDrawColor(210,190,160);
       doc.line(ML, y-1, PR, y-1);
 
       const rows = [
-        ["Project Type", (projectType ? projectType.label : "—"), "Base Development", "+" + fmt(basePrice)],
-        ["Pages / Screens", (pagesOption ? pagesOption.label : "—"), "UI Screens", pagesExtra > 0 ? "+" + fmt(pagesExtra) : "Included"],
-        ["Delivery Timeline", (timelineOpt ? timelineOpt.label : "—"), "Schedule", timelineMod > 0 ? "+" + fmt(timelineMod) + " rush" : timelineMod < 0 ? fmt(timelineMod) + " disc." : "Standard"],
+        ["Project Type", (projectType ? projectType.label : "—"), "Base Development", "+" + pf(basePrice)],
+        ["Pages / Screens", (pagesOption ? pagesOption.label : "—"), "UI Screens", pagesExtra > 0 ? "+" + pf(pagesExtra) : "Included"],
+        ["Delivery Timeline", (timelineOpt ? timelineOpt.label : "—"), "Schedule", timelineMod > 0 ? "+" + pf(timelineMod) + " rush" : timelineMod < 0 ? pf(timelineMod) + " disc." : "Standard"],
       ];
       if (paidFeatures.length > 0) {
-        rows.push(["Add-on Features", paidFeatures.length + " module(s)", "Extra Scope", "+" + fmt(featureTotal)]);
+        rows.push(["Add-on Features", paidFeatures.length + " module(s)", "Extra Scope", "+" + pf(featureTotal)]);
       }
 
       rows.forEach(function(row, i) {
@@ -232,7 +234,7 @@ export default function GetQuote() {
         doc.text(row[1], c2, y+4);
         doc.text(row[2], c3, y+4);
         doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
-        doc.text(row[3], c4, y+4, {align:"right"});
+        doc.text(row[3], c4-2, y+4, {align:"right"});
         doc.setLineWidth(0.1); doc.setDrawColor(225,210,185);
         doc.line(ML, y+6, PR, y+6);
         y+=9;
@@ -247,11 +249,11 @@ export default function GetQuote() {
       doc.text("TOTAL DEVELOPMENT ESTIMATE", ML+5, y+8.5);
       doc.setFontSize(11); doc.setTextColor(196,150,106);
       // Use right-aligned text inside the box properly
-      const totalText = fmt(totalPrice);
-      doc.text(totalText, PR-4, y+8.5, {align:"right"});
+      const totalText = pf(totalPrice);
+      doc.text(totalText, PR-6, y+8.5, {align:"right"});
       y+=15;
       doc.setFontSize(7.5); doc.setFont("helvetica","italic"); doc.setTextColor(120,90,50);
-      doc.text("(Approx. USD " + usdPrice + " at current exchange rate)", PR, y, {align:"right"});
+      doc.text("(Approx. USD " + usdPrice + " at current exchange rate)", PR-4, y, {align:"right"});
       y+=10;
 
       // ── IMPORTANT NOTICE ───────────────────────────────────────────────
@@ -297,7 +299,7 @@ export default function GetQuote() {
           doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(60,38,15);
           doc.text("  +  " + feat.label, ML+2, y+4);
           doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
-          doc.text("+" + fmt(feat.cost), PR, y+4, {align:"right"});
+          doc.text("+" + pf(feat.cost), PR-4, y+4, {align:"right"});
           doc.setLineWidth(0.1); doc.setDrawColor(225,210,185);
           doc.line(ML, y+6, PR, y+6);
           y+=9;
