@@ -59,9 +59,14 @@ export default function Footer() {
                 className="flex items-center gap-2 text-stone-400 hover:text-warm-400 text-xs transition-colors">
                 <Phone size={12} className="text-warm-400 flex-shrink-0" />+91 89202 91416
               </a>
-              <div className="flex items-center gap-2 text-stone-400 text-xs">
+              <a 
+                href="https://share.google/5RnnQtgqKIuvVWJN4"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-stone-400 hover:text-warm-400 text-xs transition-colors"
+              >
                 <MapPin size={12} className="text-warm-400 flex-shrink-0" />Delhi, India · Remote
-              </div>
+              </a>
             </div>
 
             {/* Socials */}
