@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { XIcon, LinkedInIcon, InstagramIcon, FacebookIcon } from "@/components/ui/SocialIcons";
+import { LinkedInIcon, InstagramIcon, FacebookIcon } from "@/components/ui/SocialIcons";
 
 const company = [
   { href: "/about",   label: "About Us" },
@@ -41,7 +42,7 @@ export default function Footer() {
           {/* Brand — always full width on xs, half on sm */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-4 group w-fit">
-              <img src="/logo.ico" alt="TheWebYatra" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+              <Image src="/logo.ico" alt="TheWebYatra" width={36} height={36} className="rounded-lg object-cover flex-shrink-0" />
               <div className="flex flex-col leading-tight">
                 <span className="font-display font-bold text-base text-white tracking-tight leading-none">TheWebYatra</span>
                 <span className="text-[9px] font-semibold tracking-widest text-warm-400 uppercase">We Code. You Grow.</span>
@@ -76,9 +77,11 @@ export default function Footer() {
             {/* MSME */}
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="flex items-center gap-3">
-                <img 
+                <Image 
                   src="https://upload.wikimedia.org/wikipedia/en/e/e8/Udyam_Registration_Logo.png" 
                   alt="MSME Udyam" 
+                  width={80}
+                  height={40}
                   className="h-10 w-auto"
                 />
                 <div>
