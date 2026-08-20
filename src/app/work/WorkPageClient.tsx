@@ -3,20 +3,12 @@ import BackButton from "@/components/ui/BackButton";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { projects } from "@/lib/data";
 import CTABanner from "@/components/sections/CTABanner";
 
 const categories = ["All", "Web Design", "Web Development", "E-Commerce", "App Development", "Branding"];
-const gradients = [
-  "from-blue-100 to-indigo-100 dark:from-blue-950/60 dark:to-indigo-950/60",
-  "from-rose-100 to-pink-100 dark:from-rose-950/60 dark:to-pink-950/60",
-  "from-amber-100 to-orange-100 dark:from-amber-950/60 dark:to-orange-950/60",
-  "from-violet-100 to-purple-100 dark:from-violet-950/60 dark:to-purple-950/60",
-  "from-yellow-100 to-amber-100 dark:from-yellow-950/60 dark:to-amber-950/60",
-  "from-emerald-100 to-teal-100 dark:from-emerald-950/60 dark:to-teal-950/60",
-];
-const emojis = ["🕌", "🖨️", "🍛", "✈️", "🤝", "🚕"];
 
 export default function WorkPageClient() {
   const [filter, setFilter] = useState("All");
@@ -68,15 +60,22 @@ export default function WorkPageClient() {
             <motion.div key={filter} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
               {filtered.map((project, i) => {
-                const idx = projects.findIndex((p) => p.id === project.id);
                 return (
                   <motion.div key={project.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.06 }}
                     className="group rounded-2xl overflow-hidden border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 hover:border-warm-400/50 hover:shadow-[0_8px_32px_rgba(196,150,106,0.10)] transition-all duration-300">
-                    <div className={`h-48 bg-gradient-to-br ${gradients[idx % gradients.length]} relative overflow-hidden`}>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <div className="text-5xl mb-2">{emojis[idx % emojis.length]}</div>
-                        <div className="text-stone-500 dark:text-stone-500 text-xs tracking-widest uppercase">{project.category}</div>
+                    <div className="h-48 relative overflow-hidden bg-stone-100 dark:bg-stone-800">
+                      <Image 
+                        src={project.image} 
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <div className="text-[10px] px-2 py-1 rounded-full bg-white/90 dark:bg-dark-200/90 backdrop-blur-sm text-stone-600 dark:text-stone-400 font-medium tracking-wide uppercase">
+                          {project.category}
+                        </div>
                       </div>
                       <div className="absolute inset-0 bg-stone-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <Link href={`/work/${project.id}`}

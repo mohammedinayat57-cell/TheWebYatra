@@ -99,25 +99,13 @@ export default function Footer() {
                 </div>
               </div>
 
-              {/* ISO */}
-              <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
-                <div className="bg-white rounded overflow-hidden flex-shrink-0">
-                  <Image 
-                    src="/ISO.webp" 
-                    alt="ISO Certified" 
-                    width={48}
-                    height={48}
-                    className="w-12 h-12 object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-white text-xs font-semibold">ISO Certified</p>
-                  <p className="text-stone-400 text-[10px] leading-relaxed">Quality Assured</p>
-                </div>
-              </div>
-
               {/* Google QR Code */}
-              <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
+              <a 
+                href="https://share.google/5RnnQtgqKIuvVWJN4"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10 hover:bg-white/10 hover:border-warm-400/50 transition-all cursor-pointer"
+              >
                 <div className="bg-white rounded overflow-hidden flex-shrink-0">
                   <Image 
                     src="/google-qr.jpeg" 
@@ -131,7 +119,7 @@ export default function Footer() {
                   <p className="text-white text-xs font-semibold">Find Us on Google</p>
                   <p className="text-stone-400 text-[10px] leading-relaxed">Scan to Review</p>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
 
