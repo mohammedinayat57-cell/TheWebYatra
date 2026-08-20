@@ -8,6 +8,9 @@ import { SectionHeading } from "@/components/ui/Section";
 
 export default function Services() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const whatsappNumber = "918920291416";
+  const whatsappURL = (service: string) => 
+    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi! I'm interested in ${service}.`)}`;
 
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -82,9 +85,14 @@ export default function Services() {
                   ))}
                 </ul>
 
-                <div className={`inline-flex items-center gap-1.5 text-sm font-medium bg-gradient-to-r ${service.color} bg-clip-text text-transparent group-hover:gap-2.5 transition-all`}>
-                  Learn More <ArrowRight size={13} className="opacity-70" />
-                </div>
+                <a
+                  href={whatsappURL(service.title)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1.5 text-sm font-medium bg-gradient-to-r ${service.color} bg-clip-text text-transparent group-hover:gap-2.5 transition-all`}
+                >
+                  Contact <ArrowRight size={13} className="opacity-70" />
+                </a>
               </motion.div>
             ))}
           </div>
