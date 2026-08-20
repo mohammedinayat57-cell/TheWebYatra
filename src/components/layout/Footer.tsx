@@ -80,12 +80,11 @@ export default function Footer() {
               <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
                 <div className="bg-white rounded p-1.5 flex-shrink-0">
                   <Image 
-                    src="https://udyamregistration.gov.in/images/udyog-logo.png" 
+                    src="/MSME.png" 
                     alt="MSME Udyam" 
                     width={48}
                     height={48}
                     className="w-12 h-12 object-contain"
-                    unoptimized
                   />
                 </div>
                 <div>
@@ -94,14 +93,20 @@ export default function Footer() {
                 </div>
               </div>
 
-              {/* ISO - Ready for certification number */}
+              {/* ISO */}
               <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
-                <div className="bg-white rounded p-1.5 flex-shrink-0 flex items-center justify-center w-12 h-12">
-                  <span className="text-2xl">🏆</span>
+                <div className="bg-white rounded p-1.5 flex-shrink-0">
+                  <Image 
+                    src="/ISO.webp" 
+                    alt="ISO Certified" 
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
                 <div>
                   <p className="text-white text-xs font-semibold">ISO Certified</p>
-                  <p className="text-stone-400 text-[10px] leading-relaxed">Coming Soon</p>
+                  <p className="text-stone-400 text-[10px] leading-relaxed">Quality Assured</p>
                 </div>
               </div>
             </div>
