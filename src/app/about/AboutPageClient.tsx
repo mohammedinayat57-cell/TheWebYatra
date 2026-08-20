@@ -59,7 +59,6 @@ export default function AboutPageClient() {
               initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.6 }}>
               {[
-                { value: "6+", label: "Live Projects", icon: "🚀" },
                 { value: "50+", label: "Client Projects", icon: "💼" },
                 { value: "4+", label: "Tech Stacks", icon: "⚡" },
                 { value: "Delhi", label: "India-based", icon: "📍" },

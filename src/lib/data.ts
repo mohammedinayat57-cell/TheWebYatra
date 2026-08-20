@@ -248,9 +248,7 @@ export const teamMembers: TeamMember[] = [
     bio: "Full-Stack & Java Developer building scalable web apps and AI-integrated products. MERN Stack specialist. Built Al Mishk, Panchaiyat Cafe, Globe Trotter and more. Based in Delhi.",
     avatar: "/team/inayat.jpg",
     socials: {
-      twitter: "https://twitter.com/inayatshaykh",
       linkedin: "https://www.linkedin.com/in/inayatshaykh/",
-      github: "https://github.com/inayatshaykh",
     },
   },
   {
@@ -264,13 +262,12 @@ export const teamMembers: TeamMember[] = [
     },
   },
   {
-    id: "dev",
-    name: "Dev Kapoor",
+    id: "harshit",
+    name: "Harshit Sharma",
     role: "Lead Backend Developer",
     bio: "Node.js & database architect. Specializes in scalable APIs, cloud infrastructure, and performance optimization.",
     avatar: "/team/dev.jpg",
     socials: {
-      github: "#",
       linkedin: "#",
     },
   },

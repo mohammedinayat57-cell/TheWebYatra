@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { XIcon, LinkedInIcon, InstagramIcon, GitHubIcon, YouTubeIcon } from "@/components/ui/SocialIcons";
+import { XIcon, LinkedInIcon, InstagramIcon, FacebookIcon } from "@/components/ui/SocialIcons";
 
 const company = [
   { href: "/about",   label: "About Us" },
@@ -11,12 +11,9 @@ const company = [
 ];
 
 const services = [
-  { href: "/services#web-design",      label: "Web Design" },
-  { href: "/services#web-development", label: "Development" },
-  { href: "/services#ecommerce",       label: "E-Commerce" },
-  { href: "/services#seo",             label: "SEO" },
-  { href: "/services#branding",        label: "Branding" },
-  { href: "/services#app-dev",         label: "App Dev" },
+  { href: "/#services", label: "Web Development" },
+  { href: "/#services", label: "CRM Solutions" },
+  { href: "/#services", label: "App Development" },
 ];
 
 const legal = [
@@ -26,11 +23,9 @@ const legal = [
 ];
 
 const socials = [
-  { icon: XIcon,         href: "https://twitter.com/thewebyatra",            label: "X" },
-  { icon: LinkedInIcon,  href: "https://www.linkedin.com/in/inayatshaykh/",  label: "LinkedIn" },
-  { icon: InstagramIcon, href: "https://instagram.com/thewebyatra",          label: "Instagram" },
-  { icon: GitHubIcon,    href: "https://github.com/inayatshaykh",            label: "GitHub" },
-  { icon: YouTubeIcon,   href: "https://youtube.com/@thewebyatra",           label: "YouTube" },
+  { icon: LinkedInIcon,  href: "https://www.linkedin.com/in/thewebyatra/",  label: "LinkedIn" },
+  { icon: InstagramIcon, href: "https://www.instagram.com/thewebyatra/?hl=en", label: "Instagram" },
+  { icon: FacebookIcon,  href: "https://www.facebook.com/profile.php?id=61593257650341", label: "Facebook" },
 ];
 
 export default function Footer() {
@@ -76,6 +71,21 @@ export default function Footer() {
                   <Icon size={13} />
                 </a>
               ))}
+            </div>
+
+            {/* MSME */}
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="flex items-center gap-3">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/en/e/e8/Udyam_Registration_Logo.png" 
+                  alt="MSME Udyam" 
+                  className="h-10 w-auto"
+                />
+                <div>
+                  <p className="text-white text-xs font-semibold">MSME Registered</p>
+                  <p className="text-stone-400 text-[10px]">UDYAM-DL-03-0086479</p>
+                </div>
+              </div>
             </div>
           </div>
 

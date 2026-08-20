@@ -70,7 +70,6 @@ export default function ServicesPageClient() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: "6+", label: "Live Projects" },
               { value: "3+", label: "Internships" },
               { value: "4+", label: "Tech Stacks" },
               { value: "100%", label: "Client Satisfaction" },
