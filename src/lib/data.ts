@@ -37,7 +37,7 @@ export const projects: Project[] = [
     category: "E-Commerce",
     tags: ["React", "Node.js", "MongoDB", "WhatsApp API"],
     description: "Premium attar & perfume e-commerce platform with full product catalogue, cart, wishlist, order tracking, combo deals, and WhatsApp ordering. Live at almishk.in.",
-    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=80",
     link: "https://almishk.in",
   },
   {
@@ -46,7 +46,7 @@ export const projects: Project[] = [
     category: "E-Commerce",
     tags: ["React", "Node.js", "Tailwind CSS", "E-Commerce"],
     description: "E-commerce platform for custom printing & branded merchandise — business cards, banners, gift items, and packaging with product customization.",
-    image: "https://images.unsplash.com/photo-1586953208270-e4d3e1a5129b?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1542744094-3a31f272c490?w=800&q=80",
     link: "https://nasskhub.vercel.app",
   },
   {
