@@ -2,7 +2,6 @@
 import { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { Code2, Star, Briefcase } from "lucide-react";
-import { GitHubIcon, LinkedInIcon } from "@/components/ui/SocialIcons";
 import Link from "next/link";
 
 const HeroScene = lazy(() => import("@/components/3d/HeroScene"));
@@ -76,19 +75,10 @@ export default function Hero() {
               </Link>
             </motion.div>
 
-            {/* Socials + stats */}
+            {/* Stats only - removed social icons */}
             <motion.div custom={4} initial="hidden" animate="visible" variants={fadeUp}
               className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-3">
-                <a href="https://github.com/inayatshaykh" target="_blank" rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 flex items-center justify-center text-stone-500 dark:text-stone-500 hover:text-warm-700 dark:hover:text-warm-400 hover:border-warm-400/50 transition-all">
-                  <GitHubIcon size={16} />
-                </a>
-                <a href="https://instagram.com/thewebyatra" target="_blank" rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 flex items-center justify-center text-stone-500 dark:text-stone-500 hover:text-warm-700 dark:hover:text-warm-400 hover:border-warm-400/50 transition-all">
-                  <LinkedInIcon size={16} />
-                </a>
-              </div>
+              {/* Social icons removed as requested */}
             </motion.div>
           </div>
 
