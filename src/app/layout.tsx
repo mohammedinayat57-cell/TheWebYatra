@@ -129,10 +129,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               description: "Premium web development agency specializing in MERN Stack, Next.js, CRM Solutions, and Mobile App Development",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Pocket C, Mayur Vihar Phase III",
-                addressLocality: "New Delhi",
+                streetAddress: "A-665, Street No. 12, Near Raza Chowk, Zakir Nagar",
+                addressLocality: "Delhi",
                 addressRegion: "Delhi",
-                postalCode: "110096",
+                postalCode: "110025",
                 addressCountry: "IN"
               },
               contactPoint: {
@@ -184,10 +184,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               priceRange: "₹₹",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Pocket C, Mayur Vihar Phase III",
-                addressLocality: "New Delhi",
+                streetAddress: "A-665, Street No. 12, Near Raza Chowk, Zakir Nagar",
+                addressLocality: "Delhi",
                 addressRegion: "Delhi",
-                postalCode: "110096",
+                postalCode: "110025",
                 addressCountry: "IN"
               },
               geo: {

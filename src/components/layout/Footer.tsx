@@ -66,7 +66,7 @@ export default function Footer() {
                 className="flex items-start gap-2 text-stone-400 hover:text-warm-400 text-xs transition-colors"
               >
                 <MapPin size={12} className="text-warm-400 flex-shrink-0 mt-0.5" />
-                <span>Pocket C, Mayur Vihar Phase III,<br />New Delhi, Delhi 110096, India</span>
+                <span>A-665, Street No. 12, Near Raza Chowk,<br />Zakir Nagar, Delhi - 110025, India</span>
               </a>
             </div>
 
