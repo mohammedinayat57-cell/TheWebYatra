@@ -78,13 +78,13 @@ export default function Footer() {
             <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
               {/* MSME */}
               <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
-                <div className="bg-white rounded p-1.5 flex-shrink-0">
+                <div className="bg-white rounded overflow-hidden flex-shrink-0">
                   <Image 
                     src="/MSME.png" 
                     alt="MSME Udyam" 
                     width={48}
                     height={48}
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 object-cover"
                   />
                 </div>
                 <div>
@@ -95,13 +95,13 @@ export default function Footer() {
 
               {/* ISO */}
               <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
-                <div className="bg-white rounded p-1.5 flex-shrink-0">
+                <div className="bg-white rounded overflow-hidden flex-shrink-0">
                   <Image 
                     src="/ISO.webp" 
                     alt="ISO Certified" 
                     width={48}
                     height={48}
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 object-cover"
                   />
                 </div>
                 <div>
