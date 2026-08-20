@@ -2,22 +2,17 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ExternalLink, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { projects } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/Section";
-
-const gradients = [
-  "from-blue-100 to-indigo-100 dark:from-blue-950/60 dark:to-indigo-950/60",
-  "from-rose-100 to-pink-100 dark:from-rose-950/60 dark:to-pink-950/60",
-  "from-amber-100 to-orange-100 dark:from-amber-950/60 dark:to-orange-950/60",
-  "from-violet-100 to-purple-100 dark:from-violet-950/60 dark:to-purple-950/60",
-  "from-yellow-100 to-amber-100 dark:from-yellow-950/60 dark:to-amber-950/60",
-  "from-emerald-100 to-teal-100 dark:from-emerald-950/60 dark:to-teal-950/60",
-];
-const emojis = ["🕌", "🖨️", "🍛", "✈️", "🤝", "🚕"];
+import Image from "next/image";
 
 export default function Portfolio() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const whatsappNumber = "918920291416";
+  const whatsappURL = (projectTitle: string) => 
+    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi! I'm interested in discussing a project like ${projectTitle}.`)}`;
+
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
     scrollRef.current.scrollBy({ left: dir === "right" ? 340 : -340, behavior: "smooth" });
@@ -54,7 +49,6 @@ export default function Portfolio() {
           <div ref={scrollRef} className="flex gap-5 overflow-x-auto pb-4"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {projects.map((project, i) => {
-              const idx = projects.findIndex((p) => p.id === project.id);
               return (
                 <motion.div key={project.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -63,28 +57,47 @@ export default function Portfolio() {
                   transition={{ duration: 0.5, delay: i * 0.07 }}
                   className="group flex-shrink-0 w-[290px] sm:w-[310px] rounded-2xl overflow-hidden border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 hover:border-warm-400/50 hover:shadow-[0_8px_32px_rgba(196,150,106,0.10)] transition-all duration-300">
                   {/* Image area */}
-                  <div className={`h-44 bg-gradient-to-br ${gradients[idx % gradients.length]} relative overflow-hidden`}>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="text-5xl mb-2">{emojis[idx % emojis.length]}</div>
-                      <div className="text-stone-500 dark:text-stone-500 text-xs tracking-widest uppercase font-medium">{project.category}</div>
+                  <div className="h-44 relative overflow-hidden bg-stone-100 dark:bg-stone-800">
+                    <Image 
+                      src={project.image} 
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                      sizes="310px"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <div className="text-[10px] px-2 py-1 rounded-full bg-white/90 dark:bg-dark-200/90 backdrop-blur-sm text-stone-600 dark:text-stone-400 font-medium tracking-wide uppercase">
+                        {project.category}
+                      </div>
                     </div>
-                    <div className="absolute inset-0 bg-stone-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Link href={`/work/${project.id}`}
-                        className="px-5 py-2.5 rounded-full text-sm font-semibold text-white border border-white/60 bg-white/20 hover:bg-white/30 transition-all">
-                        View Case Study
-                      </Link>
+                    <div className="absolute inset-0 bg-stone-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                      {project.link && (
+                        <a 
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 rounded-full text-xs font-semibold text-white border border-white/60 bg-white/20 hover:bg-white/30 transition-all"
+                        >
+                          <ExternalLink size={12} className="inline mr-1" />
+                          Visit
+                        </a>
+                      )}
+                      <a
+                        href={whatsappURL(project.title)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-full text-xs font-semibold text-white border border-green-400/60 bg-green-500/30 hover:bg-green-500/40 transition-all"
+                      >
+                        <MessageCircle size={12} className="inline mr-1" />
+                        Contact
+                      </a>
                     </div>
                   </div>
                   {/* Content */}
                   <div className="p-5">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-display font-semibold text-stone-900 dark:text-cream-200 text-base group-hover:text-warm-700 dark:group-hover:text-warm-400 transition-colors">
-                        {project.title}
-                      </h3>
-                      <Link href={`/work/${project.id}`} className="text-stone-300 dark:text-stone-600 hover:text-warm-600 dark:hover:text-warm-400 transition-colors mt-0.5">
-                        <ExternalLink size={14} />
-                      </Link>
-                    </div>
+                    <h3 className="font-display font-semibold text-stone-900 dark:text-cream-200 text-base mb-2 group-hover:text-warm-700 dark:group-hover:text-warm-400 transition-colors">
+                      {project.title}
+                    </h3>
                     <p className="text-stone-600 dark:text-stone-400 text-sm mb-3 line-clamp-2">{project.description}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {project.tags.slice(0, 3).map((tag) => (

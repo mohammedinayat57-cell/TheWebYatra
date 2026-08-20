@@ -37,7 +37,7 @@ export const projects: Project[] = [
     category: "E-Commerce",
     tags: ["React", "Node.js", "MongoDB", "WhatsApp API"],
     description: "Premium attar & perfume e-commerce platform with full product catalogue, cart, wishlist, order tracking, combo deals, and WhatsApp ordering. Live at almishk.in.",
-    image: "/projects/almishk.jpg",
+    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59d75?w=800&q=80",
     link: "https://almishk.in",
   },
   {
@@ -46,7 +46,7 @@ export const projects: Project[] = [
     category: "E-Commerce",
     tags: ["React", "Node.js", "Tailwind CSS", "E-Commerce"],
     description: "E-commerce platform for custom printing & branded merchandise — business cards, banners, gift items, and packaging with product customization.",
-    image: "/projects/nasskhub.jpg",
+    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&q=80",
     link: "https://nasskhub.vercel.app",
   },
   {
@@ -55,7 +55,7 @@ export const projects: Project[] = [
     category: "Web Design",
     tags: ["React", "Vite", "Tailwind CSS", "Zomato"],
     description: "Full-stack website for a Delhi-based cloud kitchen with tabbed menu, add-to-cart, Zomato order integration, and a bold late-night brand identity. Live at panchaiyatcafe.in.",
-    image: "/projects/panchaiyat.jpg",
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80",
     link: "https://panchaiyatcafe.in",
   },
   {
@@ -64,7 +64,7 @@ export const projects: Project[] = [
     category: "Web Design",
     tags: ["React", "Vite", "Tailwind CSS", "WhatsApp API"],
     description: "India's trusted travel partner site featuring curated international tour packages, destination cards with pricing, WhatsApp booking, and testimonials.",
-    image: "/projects/globetrotter.jpg",
+    image: "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&q=80",
     link: "https://globe-trotter-ui.vercel.app",
   },
   {
@@ -73,7 +73,7 @@ export const projects: Project[] = [
     category: "Web Development",
     tags: ["React", "Node.js", "MongoDB", "Auth"],
     description: "Verified B2B marketplace connecting global buyers and sellers with business verification flow, subscription-gated listings, and secure auth.",
-    image: "/projects/b2b.jpg",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
     link: "https://marketplace-d5rm.vercel.app",
   },
   {
@@ -82,7 +82,7 @@ export const projects: Project[] = [
     category: "App Development",
     tags: ["React", "Node.js", "Maps API", "MongoDB"],
     description: "On-demand cab booking web application with ride scheduling, driver-passenger matching, and location-based pickup and drop services.",
-    image: "/projects/driveyouu.jpg",
+    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80",
     link: "https://driveyouu.vercel.app",
   },
 ];
