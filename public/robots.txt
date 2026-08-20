@@ -1,0 +1,33 @@
+# TheWebYatra - Robots.txt
+# https://thewebyatra.com/robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /*.json$
+
+# Sitemap
+Sitemap: https://thewebyatra.com/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Yandex
+User-agent: Yandex
+Allow: /
+
+# Allow all image and CSS indexing
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Mediapartners-Google
+Allow: /
