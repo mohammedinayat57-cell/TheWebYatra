@@ -74,19 +74,34 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* MSME */}
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <div className="flex items-center gap-3">
-                <Image 
-                  src="https://upload.wikimedia.org/wikipedia/en/e/e8/Udyam_Registration_Logo.png" 
-                  alt="MSME Udyam" 
-                  width={80}
-                  height={40}
-                  className="h-10 w-auto"
-                />
+            {/* Certifications */}
+            <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
+              {/* MSME */}
+              <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
+                <div className="bg-white rounded p-1.5 flex-shrink-0">
+                  <Image 
+                    src="https://udyamregistration.gov.in/images/udyog-logo.png" 
+                    alt="MSME Udyam" 
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-contain"
+                    unoptimized
+                  />
+                </div>
                 <div>
                   <p className="text-white text-xs font-semibold">MSME Registered</p>
-                  <p className="text-stone-400 text-[10px]">UDYAM-DL-03-0086479</p>
+                  <p className="text-stone-400 text-[10px] leading-relaxed">UDYAM-DL-03-0086479</p>
+                </div>
+              </div>
+
+              {/* ISO - Ready for certification number */}
+              <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
+                <div className="bg-white rounded p-1.5 flex-shrink-0 flex items-center justify-center w-12 h-12">
+                  <span className="text-2xl">🏆</span>
+                </div>
+                <div>
+                  <p className="text-white text-xs font-semibold">ISO Certified</p>
+                  <p className="text-stone-400 text-[10px] leading-relaxed">Coming Soon</p>
                 </div>
               </div>
             </div>
