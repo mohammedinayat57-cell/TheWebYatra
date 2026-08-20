@@ -115,6 +115,23 @@ export default function Footer() {
                   <p className="text-stone-400 text-[10px] leading-relaxed">Quality Assured</p>
                 </div>
               </div>
+
+              {/* Google QR Code */}
+              <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
+                <div className="bg-white rounded overflow-hidden flex-shrink-0">
+                  <Image 
+                    src="/google-qr.jpeg" 
+                    alt="Google Business QR Code" 
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-white text-xs font-semibold">Find Us on Google</p>
+                  <p className="text-stone-400 text-[10px] leading-relaxed">Scan to Review</p>
+                </div>
+              </div>
             </div>
           </div>
 
