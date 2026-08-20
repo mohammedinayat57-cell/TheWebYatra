@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           <main className="pt-16">{children}</main>
           <Footer />
+          <WhatsAppButton />
         </ThemeProvider>
       </body>
     </html>

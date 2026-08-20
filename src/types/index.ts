@@ -10,6 +10,7 @@ export interface Service {
   description: string;
   features: string[];
   color: string;
+  image?: string;
 }
 
 export interface Project {
