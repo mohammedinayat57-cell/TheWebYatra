@@ -83,7 +83,12 @@ export default function Footer() {
             {/* Certifications */}
             <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
               {/* MSME */}
-              <div className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10">
+              <a 
+                href="/MSME.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10 hover:bg-white/10 hover:border-warm-400/50 transition-all cursor-pointer"
+              >
                 <div className="bg-white rounded overflow-hidden flex-shrink-0">
                   <Image 
                     src="/MSME.png" 
@@ -97,7 +102,7 @@ export default function Footer() {
                   <p className="text-white text-xs font-semibold">MSME Registered</p>
                   <p className="text-stone-400 text-[10px] leading-relaxed">UDYAM-DL-03-0086479</p>
                 </div>
-              </div>
+              </a>
 
               {/* Google QR Code */}
               <a 

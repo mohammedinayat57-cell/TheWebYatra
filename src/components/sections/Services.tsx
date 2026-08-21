@@ -57,7 +57,7 @@ export default function Services() {
                 href={whatsappURL(service.title)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r ${service.color} hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200`}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-warm-500 to-warm-700 border-2 border-warm-600 hover:shadow-lg hover:from-warm-600 hover:to-warm-800 hover:-translate-y-0.5 transition-all duration-200"
               >
                 Contact <ArrowRight size={13} />
               </a>
