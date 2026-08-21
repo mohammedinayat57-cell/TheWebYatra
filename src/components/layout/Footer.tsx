@@ -87,7 +87,7 @@ export default function Footer() {
                 href="/MSME.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10 hover:bg-white/10 hover:border-warm-400/50 transition-all cursor-pointer"
+                className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5 border border-white/10 hover:bg-white/10 hover:border-warm-400/50 transition-all cursor-pointer block"
               >
                 <div className="bg-white rounded overflow-hidden flex-shrink-0">
                   <Image 
@@ -95,7 +95,7 @@ export default function Footer() {
                     alt="MSME Udyam" 
                     width={48}
                     height={48}
-                    className="w-12 h-12 object-cover"
+                    className="w-12 h-12 object-contain"
                   />
                 </div>
                 <div>
