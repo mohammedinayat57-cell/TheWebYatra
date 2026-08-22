@@ -28,6 +28,14 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# Google Service Account keys (NEVER COMMIT THESE!)
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!next.config.json
+!manifest.json
+
 # vercel
 .vercel
 
