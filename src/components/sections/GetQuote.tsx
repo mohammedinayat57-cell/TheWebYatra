@@ -8,12 +8,24 @@ const STEP_LABELS = ["Project", "Pages", "Features", "Timeline", "Details", "Sum
 
 // ─── Step 1 data ───────────────────────────────────────────────────────────────
 const PROJECT_TYPES = [
-  { id: "landing",    emoji: "🖥",  label: "Landing Page",      sub: "Single-page site for campaigns, services or lead generation",                         base: 10000 },
-  { id: "business",   emoji: "🏢",  label: "Business Website",  sub: "Gyms, salons, clinics, agencies, shops, real estate — any local or service business", base: 18000 },
-  { id: "ecommerce",  emoji: "🛒",  label: "E-Commerce Store",  sub: "Products, cart, checkout and online payments",                                        base: 30000 },
-  { id: "restaurant", emoji: "🍽",  label: "Restaurant / Food", sub: "Menu, ordering, location and contact info",                                           base: 18000 },
-  { id: "travel",     emoji: "✈️",  label: "Travel / Tourism",  sub: "Packages, destinations and enquiry / booking features",                               base: 25000 },
-  { id: "other",      emoji: "💡",  label: "Other / Custom",    sub: "Not sure which fits? Describe it and we'll recommend the right solution",             base: 15000 },
+  { 
+    id: "landing",    
+    emoji: "🖥",  
+    label: "Landing Page",      
+    sub: "Single-page site for campaigns, services or lead generation",                         
+    base: 10000,
+    discount: 0,
+    showAddons: false
+  },
+  { 
+    id: "custom",   
+    emoji: "🏢",  
+    label: "Custom Website",  
+    sub: "Multi-page websites for businesses, agencies, portfolios, travel, restaurants, service businesses and other custom requirements", 
+    base: 25000,
+    discount: 10000,
+    showAddons: true
+  },
 ] as const;
 
 // ─── Step 2 data ───────────────────────────────────────────────────────────────
@@ -87,9 +99,11 @@ export default function GetQuote() {
   const timelineOpt  = TIMELINE_OPTIONS.find(t => t.id === timelineId);
   const featureTotal = FEATURES.filter(f => features.includes(f.id) && f.cost > 0).reduce((s, f) => s + f.cost, 0);
   const basePrice    = projectType?.base ?? 0;
+  const discount     = projectType?.discount ?? 0;
   const pagesExtra   = pagesOption?.extra ?? 0;
   const timelineMod  = timelineOpt?.modifier ?? 0;
-  const totalPrice   = basePrice + pagesExtra + featureTotal + timelineMod;
+  const showAddons   = projectType?.showAddons ?? false;
+  const totalPrice   = basePrice - discount + pagesExtra + featureTotal + timelineMod;
   const usdPrice     = Math.round(totalPrice / 85);
 
   // ── Step validation ────────────────────────────────────────────────────────
@@ -620,9 +634,14 @@ export default function GetQuote() {
 
       const rows = [
         ["Project Type", (projectType ? projectType.label : "—"), "Base Development", "+" + pf(basePrice)],
-        ["Pages / Screens", (pagesOption ? pagesOption.label : "—"), "UI Screens", pagesExtra > 0 ? "+" + pf(pagesExtra) : "Included"],
-        ["Delivery Timeline", (timelineOpt ? timelineOpt.label : "—"), "Schedule", timelineMod > 0 ? "+" + pf(timelineMod) + " rush" : timelineMod < 0 ? pf(timelineMod) + " disc." : "Standard"],
       ];
+      if (discount > 0) {
+        rows.push(["Special Discount", "Limited Time Offer", "Discount Applied", "-" + pf(discount)]);
+      }
+      rows.push(
+        ["Pages / Screens", (pagesOption ? pagesOption.label : "—"), "UI Screens", pagesExtra > 0 ? "+" + pf(pagesExtra) : "Included"],
+        ["Delivery Timeline", (timelineOpt ? timelineOpt.label : "—"), "Schedule", timelineMod > 0 ? "+" + pf(timelineMod) + " rush" : timelineMod < 0 ? pf(timelineMod) + " disc." : "Standard"]
+      );
       if (paidFeatures.length > 0) {
         rows.push(["Add-on Features", paidFeatures.length + " module(s)", "Extra Scope", "+" + pf(featureTotal)]);
       }
@@ -948,8 +967,16 @@ export default function GetQuote() {
                             <span className={`font-semibold text-sm ${projectId === pt.id ? "text-warm-700 dark:text-warm-400" : "text-stone-900 dark:text-cream-100"}`}>{pt.label}</span>
                             {projectId === pt.id && <Check size={13} className="text-warm-500 flex-shrink-0" />}
                           </div>
-                          <span className="text-stone-500 dark:text-stone-400 text-xs leading-relaxed">{pt.sub}</span>
-                          <div className="text-warm-600 dark:text-warm-400 text-xs font-bold mt-1">From {fmt(pt.base)}</div>
+                          <span className="text-stone-500 dark:text-stone-400 text-xs leading-relaxed block mb-2">{pt.sub}</span>
+                          {pt.discount > 0 ? (
+                            <div className="space-y-0.5">
+                              <div className="text-stone-400 dark:text-stone-500 text-xs line-through">Was {fmt(pt.base)}</div>
+                              <div className="text-green-600 dark:text-green-400 text-xs font-bold">Special Discount: -{fmt(pt.discount)}</div>
+                              <div className="text-warm-600 dark:text-warm-400 text-sm font-bold">Starting at {fmt(pt.base - pt.discount)}</div>
+                            </div>
+                          ) : (
+                            <div className="text-warm-600 dark:text-warm-400 text-xs font-bold mt-1">{fmt(pt.base)}</div>
+                          )}
                         </div>
                       </button>
                     ))}
@@ -990,10 +1017,14 @@ export default function GetQuote() {
               {step === 2 && (
                 <div>
                   <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">Which features do you need?</h3>
-                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-5">Free features are always _included. Toggle add-ons to customise your price.</p>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-5">
+                    {showAddons 
+                      ? "Free features are always included. Toggle add-ons to customise your price." 
+                      : "All features below are included in your Landing Page package."}
+                  </p>
                   {/* Free */}
                   <div className="mb-4">
-                    <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Always _included (Free)</p>
+                    <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Always Included (Free)</p>
                     <div className="grid grid-cols-2 gap-2">
                       {FEATURES.filter(f => f.included).map(f => (
                         <div key={f.id} className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-900/10 text-green-800 dark:text-green-400 text-xs font-medium">
@@ -1002,30 +1033,39 @@ export default function GetQuote() {
                       ))}
                     </div>
                   </div>
-                  {/* Add-ons */}
-                  <div>
-                    <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Optional Add-Ons</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {FEATURES.filter(f => !f.included).map(f => {
-                        const on = features.includes(f.id);
-                        return (
-                          <button key={f.id} onClick={() => toggleFeature(f.id)}
-                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition-all ${
-                              on ? "border-warm-400/60 bg-warm-400/8 dark:bg-warm-400/6"
-                                 : "border-cream-400 dark:border-dark-50 hover:border-warm-400/40 hover:bg-cream-100 dark:hover:bg-dark-100"
-                            }`}>
-                            <span className={`text-xs font-medium leading-tight pr-1 ${on ? "text-warm-700 dark:text-warm-400" : "text-stone-700 dark:text-stone-300"}`}>{f.label}</span>
-                            <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-                              <span className="text-[10px] font-bold text-warm-600 dark:text-warm-400">+{fmt(f.cost)}</span>
-                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${on ? "bg-warm-400 border-warm-400" : "border-stone-300 dark:border-stone-600"}`}>
-                                {on && <Check size={9} className="text-white" />}
+                  {/* Add-ons - Only show for Custom Website */}
+                  {showAddons && (
+                    <div>
+                      <p className="text-[10px] font-bold text-stone-400 dark:text-stone-600 uppercase tracking-widest mb-2">Optional Add-Ons</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {FEATURES.filter(f => !f.included).map(f => {
+                          const on = features.includes(f.id);
+                          return (
+                            <button key={f.id} onClick={() => toggleFeature(f.id)}
+                              className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition-all ${
+                                on ? "border-warm-400/60 bg-warm-400/8 dark:bg-warm-400/6"
+                                   : "border-cream-400 dark:border-dark-50 hover:border-warm-400/40 hover:bg-cream-100 dark:hover:bg-dark-100"
+                              }`}>
+                              <span className={`text-xs font-medium leading-tight pr-1 ${on ? "text-warm-700 dark:text-warm-400" : "text-stone-700 dark:text-stone-300"}`}>{f.label}</span>
+                              <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                                <span className="text-[10px] font-bold text-warm-600 dark:text-warm-400">+{fmt(f.cost)}</span>
+                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${on ? "bg-warm-400 border-warm-400" : "border-stone-300 dark:border-stone-600"}`}>
+                                  {on && <Check size={9} className="text-white" />}
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                        );
-                      })}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  {!showAddons && (
+                    <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/40">
+                      <p className="text-sm text-blue-800 dark:text-blue-400">
+                        💡 <strong>Need more features?</strong> Go back and select &quot;Custom Website&quot; to see available add-ons.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1106,6 +1146,7 @@ export default function GetQuote() {
                   {/* Breakdown card */}
                   <div className="rounded-2xl border border-warm-400/30 bg-warm-400/5 dark:bg-warm-400/4 p-5 mb-5 space-y-3">
                     <SumRow label="Base Price"  value={`${projectType?.emoji} ${projectType?.label ?? "—"}`} note={fmt(basePrice)} />
+                    {discount > 0 && <SumRow label="Discount" value="Special Offer" note={`-${fmt(discount)}`} green />}
                     {pagesExtra > 0 && <SumRow label="Pages"       value={pagesOption?.label ?? "—"}          note={`+${fmt(pagesExtra)}`} />}
                     {featureTotal > 0 && <SumRow label="Add-ons"   value={`${FEATURES.filter(f => features.includes(f.id) && f.cost > 0).length} feature(s)`} note={`+${fmt(featureTotal)}`} />}
                     {timelineMod !== 0 && (
@@ -1170,6 +1211,13 @@ export default function GetQuote() {
                   {/* Electronic Acceptance Section */}
                   {!showAcceptance && !acceptanceComplete && (
                     <div className="mt-8 pt-6 border-t border-warm-400/20">
+                      {/* Important Notice */}
+                      <div className="mb-4 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30">
+                        <p className="text-sm text-amber-800 dark:text-amber-400 leading-relaxed">
+                          <strong>📋 Important:</strong> Project development will commence only after the quotation is electronically accepted and the agreed advance payment is received.
+                        </p>
+                      </div>
+                      
                       <button
                         onClick={() => {
                           setShowAcceptance(true);
