@@ -68,6 +68,18 @@ export default function GetQuote() {
   const [timelineId, setTimelineId] = useState("");
   const [form,       setForm]       = useState({ name: "", phone: "", email: "", description: "" });
   const [fieldErr,   setFieldErr]   = useState<{ name?: string; phone?: string }>({});
+  
+  // Electronic acceptance states
+  const [showAcceptance, setShowAcceptance] = useState(false);
+  const [acceptanceData, setAcceptanceData] = useState({
+    clientName: "",
+    companyName: "",
+    mobile: "",
+    email: "",
+    agreed: false,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [acceptanceComplete, setAcceptanceComplete] = useState(false);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const projectType  = PROJECT_TYPES.find(p => p.id === projectId);
@@ -113,6 +125,395 @@ export default function GetQuote() {
   };
   const toggleFeature = (id: string) =>
     setFeatures(p => p.includes(id) ? p.filter(f => f !== id) : [...p, id]);
+
+  // ── Generate Accepted PDF with Electronic Signature ───────────────────────
+  const generateAcceptedPDF = async (): Promise<string | null> => {
+    const selectedFeatures = FEATURES.filter(f => features.includes(f.id));
+    const freeFeatures = selectedFeatures.filter(f => f.cost === 0).map(f => f.label);
+    const paidFeatures = selectedFeatures.filter(f => f.cost > 0);
+    const date = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+    const acceptanceDateTime = new Date().toLocaleString("en-IN", { 
+      day: "2-digit", 
+      month: "long", 
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+    const qno  = "TWY-" + Date.now().toString().slice(-6);
+    const pf = (n: number) => "Rs." + Math.abs(n).toLocaleString("en-IN");
+
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const PW = 210; const PH = 297;
+      const ML = 15; const MR = 15;
+      const CW = PW - ML - MR;
+      const PR = PW - MR;
+
+      let y = 0;
+      let page = 1;
+
+      const newPage = () => {
+        doc.addPage();
+        page++;
+        y = 15;
+        doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(160,130,90);
+        doc.text(`TheWebYatra  |  ${qno}  |  Page ${page}`, PW/2, PH - 8, { align: "center" });
+      };
+
+      const checkY = (needed: number) => {
+        if (y + needed > PH - 20) newPage();
+      };
+
+      const secTitle = (n: string, title: string) => {
+        checkY(14);
+        doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+        doc.text(n + ".  " + title, ML, y); y += 2;
+        doc.setLineWidth(0.3); doc.setDrawColor(196,150,106);
+        doc.line(ML, y, PR, y); y += 6;
+      };
+
+      // ── PAGE 1 HEADER ──────────────────────────────────────────────────
+      doc.setFillColor(28,22,12);
+      doc.rect(0,0,PW,30,"F");
+      doc.setFillColor(196,150,106);
+      doc.rect(0,28,PW,1.5,"F");
+
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(17); doc.setFont("helvetica","bold");
+      doc.text("TheWebYatra", ML, 12);
+      doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(196,150,106);
+      doc.text("WE CODE. YOU GROW.", ML, 18);
+      doc.setTextColor(170,150,120);
+      doc.text("thewebyatra.com  |  support@thewebyatra.com  |  +91 89202 91416", ML, 24);
+
+      doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255); doc.setFontSize(8);
+      doc.text("Quote No: " + qno, PR, 12, { align:"right" });
+      doc.setFont("helvetica","normal"); doc.setTextColor(196,150,106);
+      doc.text("Date: " + date, PR, 18, { align:"right" });
+
+      // ACCEPTED STATUS BADGE
+      doc.setFont("helvetica","bold"); doc.setTextColor(34,197,94); doc.setFontSize(7);
+      doc.text("ELECTRONICALLY ACCEPTED", PR, 24, { align:"right" });
+
+      doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(160,130,90);
+      doc.text("TheWebYatra  |  " + qno + "  |  Page 1", PW/2, PH-8, { align:"center" });
+
+      y = 38;
+
+      // ── DOCUMENT TITLE ─────────────────────────────────────────────────
+      doc.setFontSize(13); doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+      doc.text("SOFTWARE REQUIREMENTS & QUOTATION DOCUMENT", ML, y); y+=3;
+      doc.setLineWidth(0.5); doc.setDrawColor(196,150,106);
+      doc.line(ML, y, PR, y); y+=8;
+
+      // ── COVER INFO BOX ─────────────────────────────────────────────────
+      doc.setFillColor(252,248,242);
+      doc.setLineWidth(0.2); doc.setDrawColor(220,200,170);
+      doc.roundedRect(ML, y, CW, 28, 2, 2, "FD");
+      doc.setFontSize(7.5); doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+      doc.text("PREPARED FOR", ML+4, y+7);
+      doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(28,22,12);
+      doc.text(form.name || "—", ML+4, y+15);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(80,60,40);
+      const clientInfo = "Phone: " + (form.phone || "—") + (form.email ? "   |   Email: " + form.email : "");
+      doc.text(clientInfo, ML+4, y+22);
+      y+=34;
+
+      // ── SECTION 1 — PROJECT SCOPE ──────────────────────────────────────
+      secTitle("1","PROJECT SCOPE & PRICING");
+
+      const c1=ML, c2=ML+42, c3=ML+100, c4=PR;
+      doc.setFillColor(235,220,200);
+      doc.rect(ML, y-2, CW, 8, "F");
+      doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(80,50,15);
+      doc.text("ITEM", c1+2, y+4);
+      doc.text("SPECIFICATION", c2, y+4);
+      doc.text("REMARKS", c3, y+4);
+      doc.text("AMOUNT", c4-2, y+4, {align:"right"});
+      y+=9;
+      doc.setLineWidth(0.2); doc.setDrawColor(210,190,160);
+      doc.line(ML, y-1, PR, y-1);
+
+      const rows = [
+        ["Project Type", (projectType ? projectType.label : "—"), "Base Development", "+" + pf(basePrice)],
+        ["Pages / Screens", (pagesOption ? pagesOption.label : "—"), "UI Screens", pagesExtra > 0 ? "+" + pf(pagesExtra) : "Included"],
+        ["Delivery Timeline", (timelineOpt ? timelineOpt.label : "—"), "Schedule", timelineMod > 0 ? "+" + pf(timelineMod) + " rush" : timelineMod < 0 ? pf(timelineMod) + " disc." : "Standard"],
+      ];
+      if (paidFeatures.length > 0) {
+        rows.push(["Add-on Features", paidFeatures.length + " module(s)", "Extra Scope", "+" + pf(featureTotal)]);
+      }
+
+      rows.forEach(function(row, i) {
+        checkY(9);
+        if (i % 2 === 1) { doc.setFillColor(250,245,238); doc.rect(ML, y-2, CW, 8, "F"); }
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(40,28,12);
+        doc.text(row[0], c1+2, y+4);
+        doc.text(row[1], c2, y+4);
+        doc.text(row[2], c3, y+4);
+        doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+        doc.text(row[3], c4-2, y+4, {align:"right"});
+        doc.setLineWidth(0.1); doc.setDrawColor(225,210,185);
+        doc.line(ML, y+6, PR, y+6);
+        y+=9;
+      });
+
+      y+=4; checkY(14);
+
+      // Total box
+      doc.setFillColor(28,22,12);
+      doc.rect(ML, y, CW, 13, "F");
+      doc.setFontSize(9.5); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+      doc.text("TOTAL DEVELOPMENT ESTIMATE", ML+5, y+8.5);
+      doc.setFontSize(11); doc.setTextColor(196,150,106);
+      const totalText = pf(totalPrice);
+      doc.text(totalText, PR-6, y+8.5, {align:"right"});
+      y+=15;
+      doc.setFontSize(7.5); doc.setFont("helvetica","italic"); doc.setTextColor(120,90,50);
+      doc.text("(Approx. USD " + usdPrice + " at current exchange rate)", PR-4, y, {align:"right"});
+      y+=10;
+
+      // ── IMPORTANT NOTICE ───────────────────────────────────────────────
+      checkY(22);
+      doc.setFillColor(255,250,230);
+      doc.setLineWidth(0.3); doc.setDrawColor(210,170,60);
+      doc.roundedRect(ML, y, CW, 18, 2, 2, "FD");
+      doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(150,100,10);
+      doc.text("IMPORTANT NOTICE", ML+4, y+7);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(80,58,10);
+      doc.text("This quotation covers DEVELOPMENT CHARGES ONLY.", ML+4, y+13);
+      doc.text("Domain, hosting, server, database & third-party API costs are NOT included and billed separately.", ML+4, y+18.5);
+      y+=24;
+
+      // ── SECTION 2 — FEATURES ───────────────────────────────────────────
+      checkY(16);
+      secTitle("2","FEATURES INCLUDED IN SCOPE");
+
+      if (freeFeatures.length > 0) {
+        checkY(10);
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(20,130,60);
+        doc.text("Standard Features  —  Always Included (No Extra Charge)", ML+2, y); y+=6;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(30,90,45);
+        const half = Math.ceil(freeFeatures.length / 2);
+        freeFeatures.forEach(function(l, i) {
+          checkY(7);
+          const cx = i < half ? ML+4 : ML + CW/2 + 4;
+          const row2 = i < half ? i : i - half;
+          if (i < half) { doc.text("✓  " + l, cx, y + row2*6); }
+          else { doc.text("✓  " + l, cx, y + row2*6); }
+        });
+        y += Math.ceil(freeFeatures.length / 2) * 6 + 6;
+      }
+
+      if (paidFeatures.length > 0) {
+        checkY(10);
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(139,94,60);
+        doc.text("Additional Features  —  Selected Add-ons", ML+2, y); y+=6;
+        paidFeatures.forEach(function(feat, i) {
+          checkY(9);
+          if (i % 2 === 1) { doc.setFillColor(250,245,238); doc.rect(ML, y-2, CW, 8, "F"); }
+          doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(60,38,15);
+          doc.text("  +  " + feat.label, ML+2, y+4);
+          doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+          doc.text("+" + pf(feat.cost), PR-4, y+4, {align:"right"});
+          doc.setLineWidth(0.1); doc.setDrawColor(225,210,185);
+          doc.line(ML, y+6, PR, y+6);
+          y+=9;
+        });
+        y+=4;
+      }
+
+      // Free maintenance badge
+      checkY(14);
+      doc.setFillColor(238,252,242);
+      doc.setLineWidth(0.3); doc.setDrawColor(80,190,110);
+      doc.roundedRect(ML, y, CW, 11, 2, 2, "FD");
+      doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.setTextColor(15,130,55);
+      doc.text("✓   1 Month FREE Post-Launch Maintenance & Bug Fixes Included", ML+5, y+7.5);
+      y+=17;
+
+      // ── SECTION 3 — CLIENT NOTES ───────────────────────────────────────
+      if (form.description) {
+        checkY(16);
+        secTitle("3","CLIENT REQUIREMENTS & NOTES");
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(50,35,15);
+        const noteLines = doc.splitTextToSize(form.description, CW-4);
+        noteLines.forEach(function(line: string) {
+          checkY(7);
+          doc.text(line, ML+2, y); y+=6;
+        });
+        y+=6;
+      }
+
+      // ── SECTION 4 — TERMS & CONDITIONS ────────────────────────────────
+      const tNum = form.description ? "4" : "3";
+      checkY(16);
+      secTitle(tNum, "TERMS & CONDITIONS");
+
+      const terms = [
+        ["1.  Validity",          "This quotation is valid for 30 days from the date of issue."],
+        ["2.  Advance Payment",   "50% of the total amount is required before project commencement."],
+        ["3.  Balance Payment",   "Remaining 50% is due upon project completion before final delivery."],
+        ["4.  Timeline",          "Delivery timeline starts after advance payment and signed requirement confirmation."],
+        ["5.  Scope Changes",     "Any additional features outside this scope will be quoted separately."],
+        ["6.  Exclusions",        "Domain, hosting, server, database & third-party API costs are NOT included."],
+        ["7.  Maintenance",       "1 month free post-launch bug fixes included. Extended plans available on request."],
+      ];
+
+      terms.forEach(function(t, i) {
+        checkY(9);
+        if (i % 2 === 1) { doc.setFillColor(250,245,238); doc.rect(ML, y-2, CW, 8, "F"); }
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(100,68,25);
+        doc.text(t[0], ML+2, y+4);
+        doc.setFont("helvetica","normal"); doc.setTextColor(50,35,15);
+        doc.text(t[1], ML+52, y+4);
+        doc.setLineWidth(0.1); doc.setDrawColor(220,205,180);
+        doc.line(ML, y+6, PR, y+6);
+        y+=9;
+      });
+      y+=8;
+
+      // ── ELECTRONIC ACCEPTANCE SECTION ──────────────────────────────────
+      checkY(50);
+      doc.setFillColor(232,245,233);
+      doc.setLineWidth(0.3); doc.setDrawColor(76,175,80);
+      doc.roundedRect(ML, y, CW, 60, 2, 2, "FD");
+      y+=5;
+      
+      doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(27,94,32);
+      doc.text("✓  ELECTRONIC ACCEPTANCE & SIGNATURE", ML+4, y); y+=8;
+      
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(60,45,25);
+      doc.text("Status:", ML+4, y);
+      doc.setFont("helvetica","bold"); doc.setTextColor(27,94,32);
+      doc.text("Electronically Accepted by Client", ML+20, y); y+=8;
+      
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(60,45,25);
+      doc.text("Client Name:", ML+4, y);
+      doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+      doc.text(acceptanceData.clientName || "—", ML+30, y); y+=6;
+      
+      if (acceptanceData.companyName) {
+        doc.setFont("helvetica","normal"); doc.setTextColor(60,45,25);
+        doc.text("Company/Business:", ML+4, y);
+        doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+        doc.text(acceptanceData.companyName, ML+40, y); y+=6;
+      }
+      
+      doc.setFont("helvetica","normal"); doc.setTextColor(60,45,25);
+      doc.text("Mobile Number:", ML+4, y);
+      doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+      doc.text(acceptanceData.mobile || "—", ML+32, y); y+=6;
+      
+      doc.setFont("helvetica","normal"); doc.setTextColor(60,45,25);
+      doc.text("Email Address:", ML+4, y);
+      doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+      doc.text(acceptanceData.email || "—", ML+32, y); y+=8;
+      
+      doc.setFont("helvetica","normal"); doc.setTextColor(60,45,25);
+      doc.text("Acceptance Date & Time:", ML+4, y);
+      doc.setFont("helvetica","bold"); doc.setTextColor(28,22,12);
+      doc.text(acceptanceDateTime, ML+48, y); y+=8;
+      
+      // Electronic Signature
+      doc.setLineWidth(0.4); doc.setDrawColor(100,70,30);
+      doc.line(ML+4, y, ML+80, y); y+=4;
+      doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(28,22,12);
+      doc.text(acceptanceData.clientName || "—", ML+4, y); y+=4;
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(100,75,40);
+      doc.text("Electronic Signature / Client Name", ML+4, y); y+=3;
+      doc.setFontSize(7.5);
+      doc.text("Mobile: " + acceptanceData.mobile, ML+4, y);
+      
+      y+=12;
+
+      // Legal Text
+      doc.setFont("helvetica","bold"); doc.setFontSize(7); doc.setTextColor(27,94,32);
+      doc.text("Electronic Acceptance & Legal Validity:", ML+4, y); y+=4;
+      doc.setFont("helvetica","normal"); doc.setFontSize(6.5); doc.setTextColor(60,45,25);
+      const legalText = doc.splitTextToSize(
+        "By submitting the above information and clicking 'Accept & Sign', the Client confirms acceptance of this quotation and its Terms & Conditions. Such electronic acceptance and electronic records are intended to be recognized under the Information Technology Act, 2000, including Section 10A (Validity of contracts formed through electronic means).",
+        CW - 10
+      );
+      legalText.forEach((line: string) => {
+        checkY(5);
+        doc.text(line, ML+4, y); y+=4;
+      });
+      
+      y+=10;
+
+      // ── FINAL FOOTER ───────────────────────────────────────────────────
+      checkY(18);
+      doc.setLineWidth(0.5); doc.setDrawColor(196,150,106);
+      doc.line(ML, y, PR, y); y+=6;
+      doc.setFontSize(8.5); doc.setFont("helvetica","bold"); doc.setTextColor(139,94,60);
+      doc.text("Thank you for choosing TheWebYatra. We look forward to building something great together!", ML, y);
+      y+=6;
+      doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(140,110,70);
+      doc.text(qno + "  |  support@thewebyatra.com  |  +91 89202 91416  |  thewebyatra.com", ML, y);
+
+      // Return PDF as base64 string
+      return doc.output("datauristring").split(",")[1];
+    } catch (err) {
+      console.error("PDF error:", err);
+      return null;
+    }
+  };
+
+  // ── Handle Electronic Acceptance Submission ───────────────────────────────
+  const handleAcceptanceSubmit = async () => {
+    // Validate acceptance form
+    if (!acceptanceData.clientName || !acceptanceData.mobile || !acceptanceData.email || !acceptanceData.agreed) {
+      alert("Please fill all required fields and agree to the terms.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Generate accepted PDF
+      const pdfBase64 = await generateAcceptedPDF();
+      
+      if (!pdfBase64) {
+        throw new Error("Failed to generate PDF");
+      }
+
+      const qno = "TWY-" + Date.now().toString().slice(-6);
+
+      // Send to API
+      const response = await fetch("/api/quotation/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pdfBase64,
+          clientName: acceptanceData.clientName,
+          clientEmail: acceptanceData.email,
+          clientMobile: acceptanceData.mobile,
+          quotationNumber: qno,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setAcceptanceComplete(true);
+        // Optionally download the PDF locally too
+        const linkSource = `data:application/pdf;base64,${pdfBase64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = `TheWebYatra_Accepted_${acceptanceData.clientName.replace(/\s+/g,"_")}_${qno}.pdf`;
+        downloadLink.click();
+      } else {
+        throw new Error(result.error || "Failed to submit acceptance");
+      }
+    } catch (error) {
+      console.error("Acceptance error:", error);
+      alert("Failed to submit acceptance. Please try again or contact us directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // ── Download PDF (professional SRS-style document) ───────────────────────
   const downloadPDF = async () => {
@@ -766,11 +1167,182 @@ export default function GetQuote() {
                     PDF downloads to your device · WhatsApp message includes all details
                   </p>
 
+                  {/* Electronic Acceptance Section */}
+                  {!showAcceptance && !acceptanceComplete && (
+                    <div className="mt-8 pt-6 border-t border-warm-400/20">
+                      <button
+                        onClick={() => {
+                          setShowAcceptance(true);
+                          setAcceptanceData({
+                            clientName: form.name,
+                            companyName: "",
+                            mobile: form.phone,
+                            email: form.email,
+                            agreed: false,
+                          });
+                        }}
+                        className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-bold text-white text-base transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(34,197,94,0.35)]"
+                        style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}>
+                        <Check size={17} />
+                        Accept & Sign Electronically
+                      </button>
+                      <p className="text-stone-400 dark:text-stone-600 text-xs text-center mt-2">
+                        Electronically accept this quotation and receive the signed PDF via email
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Electronic Acceptance Form */}
+                  {showAcceptance && !acceptanceComplete && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-8 pt-6 border-t border-warm-400/20">
+                      <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/40 rounded-2xl p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                            <Shield className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="font-display text-lg font-bold text-stone-900 dark:text-white">
+                              Electronic Acceptance & Signature
+                            </h4>
+                            <p className="text-xs text-stone-600 dark:text-stone-400">
+                              Confirm your details to electronically accept this quotation
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div>
+                            <label className={lbl}>Full Name (as Electronic Signature) *</label>
+                            <input
+                              type="text"
+                              value={acceptanceData.clientName}
+                              onChange={e => setAcceptanceData(p => ({ ...p, clientName: e.target.value }))}
+                              placeholder="Your full name"
+                              className={inp}
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className={lbl}>Company / Business Name <span className="normal-case font-normal text-stone-400">(optional)</span></label>
+                            <input
+                              type="text"
+                              value={acceptanceData.companyName}
+                              onChange={e => setAcceptanceData(p => ({ ...p, companyName: e.target.value }))}
+                              placeholder="Your company name"
+                              className={inp}
+                            />
+                          </div>
+
+                          <div className="grid sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className={lbl}>Mobile Number *</label>
+                              <input
+                                type="tel"
+                                value={acceptanceData.mobile}
+                                onChange={e => setAcceptanceData(p => ({ ...p, mobile: e.target.value }))}
+                                placeholder="Your mobile number"
+                                className={inp}
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className={lbl}>Email Address *</label>
+                              <input
+                                type="email"
+                                value={acceptanceData.email}
+                                onChange={e => setAcceptanceData(p => ({ ...p, email: e.target.value }))}
+                                placeholder="your@email.com"
+                                className={inp}
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-dark-200 border border-stone-200 dark:border-stone-700">
+                            <input
+                              type="checkbox"
+                              id="agree-terms"
+                              checked={acceptanceData.agreed}
+                              onChange={e => setAcceptanceData(p => ({ ...p, agreed: e.target.checked }))}
+                              className="mt-1 w-4 h-4 rounded border-stone-300 text-green-600 focus:ring-green-500"
+                            />
+                            <label htmlFor="agree-terms" className="text-sm text-stone-700 dark:text-stone-300 cursor-pointer">
+                              I have read and agree to the quotation, project scope, pricing, and Terms & Conditions outlined above.
+                            </label>
+                          </div>
+
+                          <button
+                            onClick={handleAcceptanceSubmit}
+                            disabled={isSubmitting || !acceptanceData.agreed}
+                            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-bold text-white text-base transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(34,197,94,0.35)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                            style={{ background: "linear-gradient(135deg, #16a34a, #22c55e)" }}>
+                            {isSubmitting ? (
+                              <>
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <Check size={17} />
+                                Accept & Sign Electronically
+                              </>
+                            )}
+                          </button>
+
+                          <div className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed p-3 bg-stone-50 dark:bg-dark-100 rounded-lg">
+                            <strong className="text-green-600 dark:text-green-400">Electronic Acceptance & Legal Validity:</strong> By submitting the above information and clicking "Accept & Sign", the Client confirms acceptance of this quotation and its Terms & Conditions. Such electronic acceptance and electronic records are intended to be recognized under the Information Technology Act, 2000, including Section 10A (Validity of contracts formed through electronic means).
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Acceptance Complete Message */}
+                  {acceptanceComplete && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="mt-8 pt-6 border-t border-warm-400/20">
+                      <div className="bg-green-50 dark:bg-green-900/10 border-2 border-green-500 rounded-2xl p-8 text-center">
+                        <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
+                          <Check className="w-8 h-8 text-white" strokeWidth={3} />
+                        </div>
+                        <h4 className="font-display text-2xl font-bold text-stone-900 dark:text-white mb-2">
+                          Quotation Accepted Successfully!
+                        </h4>
+                        <p className="text-stone-600 dark:text-stone-400 mb-6">
+                          Your electronically signed quotation has been sent to your email and uploaded to our records.
+                        </p>
+                        <div className="space-y-2 text-sm text-stone-700 dark:text-stone-300">
+                          <p>✓ Accepted PDF sent to: <strong>{acceptanceData.email}</strong></p>
+                          <p>✓ Copy sent to TheWebYatra team</p>
+                          <p>✓ Quotation uploaded to secure storage</p>
+                        </div>
+                        <div className="mt-6 p-4 bg-white dark:bg-dark-200 rounded-xl border border-stone-200 dark:border-stone-700">
+                          <p className="text-sm text-stone-600 dark:text-stone-400 mb-2">
+                            <strong>Next Steps:</strong>
+                          </p>
+                          <ul className="text-xs text-left text-stone-600 dark:text-stone-400 space-y-1">
+                            <li>• Our team will contact you within 24 hours</li>
+                            <li>• We'll share payment details for 50% advance</li>
+                            <li>• Project timeline begins after payment confirmation</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Secondary — talk directly */}
-                  <a href="https://wa.me/918920291416" target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-full font-semibold text-warm-700 dark:text-warm-400 text-sm border border-warm-400/40 bg-cream-100 dark:bg-dark-100 hover:bg-cream-200 dark:hover:bg-dark-50 transition-all">
-                    <MessageCircle size={15} /> Talk on WhatsApp
-                  </a>
+                  {!showAcceptance && (
+                    <a href="https://wa.me/918920291416" target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-full font-semibold text-warm-700 dark:text-warm-400 text-sm border border-warm-400/40 bg-cream-100 dark:bg-dark-100 hover:bg-cream-200 dark:hover:bg-dark-50 transition-all mt-3">
+                      <MessageCircle size={15} /> Talk on WhatsApp
+                    </a>
+                  )}
                 </div>
               )}
             </motion.div>
