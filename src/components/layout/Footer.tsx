@@ -20,7 +20,6 @@ const services = [
 const legal = [
   { href: "/privacy",     label: "Privacy Policy" },
   { href: "/terms",       label: "Terms of Service" },
-  { href: "/sitemap.xml", label: "Sitemap" },
 ];
 
 const socials = [
