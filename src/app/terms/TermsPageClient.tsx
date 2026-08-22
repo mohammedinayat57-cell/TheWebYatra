@@ -138,7 +138,7 @@ export default function TermsPageClient() {
             </h2>
             <div className="space-y-3 text-stone-700 dark:text-stone-300 leading-relaxed">
               <p>
-                Our services are provided "as is" without warranties of any kind, either express or implied. We do not warrant that:
+                Our services are provided &quot;as is&quot; without warranties of any kind, either express or implied. We do not warrant that:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Our services will be uninterrupted or error-free</li>

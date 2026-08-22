@@ -1294,7 +1294,7 @@ export default function GetQuote() {
                           </button>
 
                           <div className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed p-3 bg-stone-50 dark:bg-dark-100 rounded-lg">
-                            <strong className="text-green-600 dark:text-green-400">Electronic Acceptance & Legal Validity:</strong> By submitting the above information and clicking "Accept & Sign", the Client confirms acceptance of this quotation and its Terms & Conditions. Such electronic acceptance and electronic records are intended to be recognized under the Information Technology Act, 2000, including Section 10A (Validity of contracts formed through electronic means).
+                            <strong className="text-green-600 dark:text-green-400">Electronic Acceptance & Legal Validity:</strong> By submitting the above information and clicking &quot;Accept & Sign&quot;, the Client confirms acceptance of this quotation and its Terms & Conditions. Such electronic acceptance and electronic records are intended to be recognized under the Information Technology Act, 2000, including Section 10A (Validity of contracts formed through electronic means).
                           </div>
                         </div>
                       </div>
@@ -1328,7 +1328,7 @@ export default function GetQuote() {
                           </p>
                           <ul className="text-xs text-left text-stone-600 dark:text-stone-400 space-y-1">
                             <li>• Our team will contact you within 24 hours</li>
-                            <li>• We'll share payment details for 50% advance</li>
+                            <li>• We&apos;ll share payment details for 50% advance</li>
                             <li>• Project timeline begins after payment confirmation</li>
                           </ul>
                         </div>

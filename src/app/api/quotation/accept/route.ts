@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
       quotationNumber,
       pdfBuffer,
       fileName,
-      driveResult.webViewLink
+      driveResult.webViewLink || undefined
     );
 
     if (!emailResult.success) {
