@@ -30,10 +30,10 @@ const PROJECT_TYPES = [
 
 // ─── Step 2 data ───────────────────────────────────────────────────────────────
 const PAGES_OPTIONS = [
-  { id: "1-3",  label: "1–3 pages",  extra: 0     },
-  { id: "4-7",  label: "4–7 pages",  extra: 3000  },
-  { id: "8-15", label: "8–15 pages", extra: 7000  },
-  { id: "15+",  label: "15+ pages",  extra: 12000 },
+  { id: "1-5",   label: "1–5 pages",   extra: 0     },
+  { id: "6-10",  label: "6–10 pages",  extra: 2000  },
+  { id: "11-15", label: "11–15 pages", extra: 4000  },
+  { id: "16+",   label: "16+ pages",   extra: 6000  },
 ] as const;
 
 // ─── Step 3 data ───────────────────────────────────────────────────────────────
@@ -989,11 +989,6 @@ export default function GetQuote() {
                 <div>
                   <h3 className="font-display text-xl font-bold text-stone-900 dark:text-cream-100 mb-1">How many pages do you need?</h3>
                   <p className="text-stone-500 dark:text-stone-400 text-sm mb-2">Estimate the number of unique pages on your site.</p>
-                  {(projectId === "ecommerce") && (
-                    <div className="mb-4 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 text-amber-700 dark:text-amber-400 text-xs">
-                      💡 For E-Commerce, pricing is primarily based on features. Page count is a rough guide.
-                    </div>
-                  )}
                   <div className="grid grid-cols-2 gap-3 mt-4">
                     {PAGES_OPTIONS.map(po => (
                       <button key={po.id} onClick={() => setPagesId(po.id)}
@@ -1004,11 +999,14 @@ export default function GetQuote() {
                         }`}>
                         <span className={`font-display font-bold text-lg ${pagesId === po.id ? "text-warm-600 dark:text-warm-400" : "text-stone-900 dark:text-cream-100"}`}>{po.label}</span>
                         <span className={`text-xs font-semibold mt-1 ${po.extra === 0 ? "text-green-600 dark:text-green-400" : "text-warm-600 dark:text-warm-400"}`}>
-                          {po.extra === 0 ? "_included" : `+${fmt(po.extra)}`}
+                          {po.extra === 0 ? "Included" : `+${fmt(po.extra)}`}
                         </span>
                         {pagesId === po.id && <Check size={13} className="text-warm-500 mt-1.5" />}
                       </button>
                     ))}
+                  </div>
+                  <div className="mt-4 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/40 text-blue-800 dark:text-blue-400 text-xs">
+                    💡 <strong>Note:</strong> Dynamically generated product pages are not counted individually.
                   </div>
                 </div>
               )}
