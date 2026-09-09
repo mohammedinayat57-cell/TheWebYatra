@@ -85,6 +85,15 @@ export const projects: Project[] = [
     image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80",
     link: "https://driveyouu.vercel.app",
   },
+  {
+    id: "mytravelbox",
+    title: "My Travel Box",
+    category: "Web Development",
+    tags: ["React", "Node.js", "Role-Based Auth", "CRM"],
+    description: "Full-stack travel CRM platform with multi-role access — Director, Branch Manager, Operations, Sales, Visa Team, Accounts, Tour Manager, and Parent portals. Live at my-travel-box.vercel.app.",
+    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80",
+    link: "https://my-travel-box.vercel.app",
+  },
 ];
 
 export const testimonials: Testimonial[] = [

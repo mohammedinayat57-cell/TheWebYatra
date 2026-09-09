@@ -23,7 +23,7 @@ const PROJECT_TYPES = [
     label: "Custom Website",  
     sub: "Multi-page websites for businesses, agencies, portfolios, travel, restaurants, service businesses and other custom requirements", 
     base: 25000,
-    discount: 10000,
+    discount: 0,
     showAddons: true
   },
 ] as const;
@@ -968,15 +968,7 @@ export default function GetQuote() {
                             {projectId === pt.id && <Check size={13} className="text-warm-500 flex-shrink-0" />}
                           </div>
                           <span className="text-stone-500 dark:text-stone-400 text-xs leading-relaxed block mb-2">{pt.sub}</span>
-                          {pt.discount > 0 ? (
-                            <div className="space-y-0.5">
-                              <div className="text-stone-400 dark:text-stone-500 text-xs line-through">Was {fmt(pt.base)}</div>
-                              <div className="text-green-600 dark:text-green-400 text-xs font-bold">Special Discount: -{fmt(pt.discount)}</div>
-                              <div className="text-warm-600 dark:text-warm-400 text-sm font-bold">Starting at {fmt(pt.base - pt.discount)}</div>
-                            </div>
-                          ) : (
-                            <div className="text-warm-600 dark:text-warm-400 text-xs font-bold mt-1">{fmt(pt.base)}</div>
-                          )}
+                          <div className="text-warm-600 dark:text-warm-400 text-xs font-bold mt-1">{fmt(pt.base)}</div>
                         </div>
                       </button>
                     ))}

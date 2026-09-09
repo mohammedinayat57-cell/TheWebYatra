@@ -150,6 +150,7 @@ export default function Navbar() {
               </ul>
               <Link
                 href="/#quote"
+                onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-warm-400 to-warm-700"
               >
                 Get a Quote

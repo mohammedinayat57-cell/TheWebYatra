@@ -1,8 +1,9 @@
 "use client";
 import BackButton from "@/components/ui/BackButton";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Tag, MessageCircle } from "lucide-react";
+import { ArrowRight, Tag, MessageCircle, KeyRound, Eye, EyeOff } from "lucide-react";
 import type { Project } from "@/types";
 import { projects } from "@/lib/data";
 
@@ -47,6 +48,33 @@ const caseStudyDetails: Record<string, { challenge: string; solution: string; re
     solution: "Built with React, Node.js, Maps API. Includes ride scheduling, real-time driver-passenger matching, and location-based pickup/drop — deployed on Vercel.",
     results: ["Live at driveyouu.vercel.app", "Real-time ride matching", "Maps API integration", "Ride scheduling system"],
   },
+  mytravelbox: {
+    challenge: "My Travel Box required a comprehensive travel management CRM with granular role-based access — covering everything from Director-level oversight down to branch operations, visa processing, tour management, accounts, sales, and parent/student portals.",
+    solution: "Built a full-stack travel CRM with multi-role authentication (8 distinct roles), dedicated dashboards per role, tour package management, visa tracking, accounts module, and parent portals showing student travel progress. Live at my-travel-box.vercel.app.",
+    results: [
+      "Live at my-travel-box.vercel.app",
+      "8 role-based dashboards",
+      "Director & Branch Manager oversight",
+      "Visa & operations tracking",
+      "Parent portal with trip updates",
+      "Accounts & sales modules",
+    ],
+  },
+};
+
+const demoCredentials: Record<string, { role: string; email: string; password: string }[]> = {
+  mytravelbox: [
+    { role: "Director",       email: "director@mytravelbox.com",    password: "Director@123"  },
+    { role: "Branch Manager", email: "bm@mytravelbox.com",          password: "Manager@123"   },
+    { role: "Operations",     email: "ops@mytravelbox.com",         password: "Ops@1234"      },
+    { role: "Sales",          email: "sales@mytravelbox.com",       password: "Sales@123"     },
+    { role: "Visa Team",      email: "visa@mytravelbox.com",        password: "Visa@1234"     },
+    { role: "Accounts",       email: "accounts@mytravelbox.com",    password: "Accounts@1"    },
+    { role: "Tour Manager",   email: "tourmanager@mytravelbox.com", password: "Tour@1234"     },
+    { role: "Parent 1 (Arjun / Japan)",       email: "parent1@example.com", password: "Parent@123" },
+    { role: "Parent 2 (Priya / Singapore)",   email: "parent2@example.com", password: "Parent@456" },
+    { role: "Parent 3 (Rahul / Switzerland)", email: "parent3@example.com", password: "Parent@789" },
+  ],
 };
 
 interface Props { project: Project }
@@ -55,6 +83,8 @@ export default function WorkDetailClient({ project }: Props) {
   const idx = projects.findIndex((p) => p.id === project.id);
   const details = caseStudyDetails[project.id];
   const nextProject = projects[(idx + 1) % projects.length];
+  const credentials = demoCredentials[project.id];
+  const [showPasswords, setShowPasswords] = useState(false);
 
   return (
     <>
@@ -159,7 +189,40 @@ export default function WorkDetailClient({ project }: Props) {
                 style={{ background: "linear-gradient(135deg,#25D366,#128C7E)" }}>
                 <MessageCircle size={14} /> Get a Quote <ArrowRight size={14} />
               </Link>
-            </div>
+
+              {/* Demo credentials card */}
+              {credentials && (
+                <div className="rounded-2xl border border-warm-400/30 bg-warm-400/5 dark:bg-warm-400/4 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-warm-400/15 flex items-center justify-center">
+                        <KeyRound size={14} className="text-warm-600 dark:text-warm-400" />
+                      </div>
+                      <h3 className="font-display text-sm font-semibold text-stone-900 dark:text-cream-100">Demo Login Credentials</h3>
+                    </div>
+                    <button
+                      onClick={() => setShowPasswords(p => !p)}
+                      className="flex items-center gap-1 text-xs text-stone-500 dark:text-stone-400 hover:text-warm-600 dark:hover:text-warm-400 transition-colors"
+                      aria-label={showPasswords ? "Hide passwords" : "Show passwords"}
+                    >
+                      {showPasswords ? <EyeOff size={13} /> : <Eye size={13} />}
+                      {showPasswords ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {credentials.map((cred) => (
+                      <div key={cred.role} className="rounded-xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 px-3 py-2.5">
+                        <div className="text-[10px] font-bold text-warm-600 dark:text-warm-400 uppercase tracking-wider mb-1">{cred.role}</div>
+                        <div className="text-xs text-stone-600 dark:text-stone-400 font-mono break-all">{cred.email}</div>
+                        <div className="text-xs text-stone-500 dark:text-stone-500 font-mono mt-0.5">
+                          {showPasswords ? cred.password : "••••••••••"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-stone-400 dark:text-stone-600 mt-3 text-center">For demo purposes only</p>
+                </div>
+              )}            </div>
           </div>
 
           {/* Next project */}
