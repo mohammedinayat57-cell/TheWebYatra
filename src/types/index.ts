@@ -50,6 +50,7 @@ export interface TeamMember {
   role: string;
   bio: string;
   avatar: string;
+  phones?: string[];
   socials: {
     twitter?: string;
     linkedin?: string;

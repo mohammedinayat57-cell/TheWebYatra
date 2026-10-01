@@ -1,7 +1,7 @@
 "use client";
 import BackButton from "@/components/ui/BackButton";
 import { motion } from "framer-motion";
-import { Target, Eye, Heart } from "lucide-react";
+import { Target, Eye, Heart, Phone } from "lucide-react";
 import { XIcon, LinkedInIcon, GitHubIcon } from "@/components/ui/SocialIcons";
 import { teamMembers } from "@/lib/data";
 import CTABanner from "@/components/sections/CTABanner";
@@ -112,6 +112,18 @@ export default function AboutPageClient() {
                 <h3 className="font-display font-semibold text-stone-900 dark:text-cream-200 text-base mb-0.5">{member.name}</h3>
                 <p className="text-warm-600 dark:text-warm-400 text-xs font-medium mb-3">{member.role}</p>
                 <p className="text-stone-500 dark:text-stone-500 text-xs leading-relaxed mb-4">{member.bio}</p>
+                {member.phones && member.phones.length > 0 && (
+                  <div className="flex flex-col gap-1 mb-4">
+                    {member.phones.map((phone) => (
+                      <a key={phone} href={`tel:${phone.replace(/\s/g, "")}`}
+                        className="flex items-center justify-center gap-1.5 text-xs text-stone-600 dark:text-stone-400 hover:text-warm-600 dark:hover:text-warm-400 transition-colors">
+                        <Phone size={11} className="text-warm-500 dark:text-warm-400 shrink-0" />
+                        {phone}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {(member.socials.twitter || member.socials.linkedin || member.socials.github) && (
                 <div className="flex items-center justify-center gap-2">
                   {member.socials.twitter && (
                     <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer"
@@ -132,6 +144,7 @@ export default function AboutPageClient() {
                     </a>
                   )}
                 </div>
+                )}
               </motion.div>
             ))}
           </div>

@@ -266,9 +266,7 @@ export const teamMembers: TeamMember[] = [
     role: "Head of Design",
     bio: "UI/UX expert with a sharp eye for detail. Bridges beautiful design and functional user experiences across web and mobile.",
     avatar: "/team/priya.jpg",
-    socials: {
-      linkedin: "#",
-    },
+    socials: {},
   },
   {
     id: "harshit",
@@ -276,9 +274,7 @@ export const teamMembers: TeamMember[] = [
     role: "Lead Backend Developer",
     bio: "Node.js & database architect. Specializes in scalable APIs, cloud infrastructure, and performance optimization.",
     avatar: "/team/dev.jpg",
-    socials: {
-      linkedin: "#",
-    },
+    socials: {},
   },
   {
     id: "sara",
@@ -286,9 +282,16 @@ export const teamMembers: TeamMember[] = [
     role: "SEO & Growth Lead",
     bio: "Data-driven growth strategist who's helped 50+ brands rank on page 1. Expert in technical SEO, content strategy, and conversion optimization.",
     avatar: "/team/sara.jpg",
-    socials: {
-      linkedin: "#",
-    },
+    socials: {},
+  },
+  {
+    id: "nadeem",
+    name: "Nadeem Khan",
+    role: "Project Manager",
+    bio: "Experienced project manager ensuring smooth delivery across all client projects — from briefing to launch. Your go-to point of contact.",
+    avatar: "/team/nadeem.jpg",
+    phones: ["+91 93191 16576", "+91 11-44759946"],
+    socials: {},
   },
 ];
 
