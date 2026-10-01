@@ -11,7 +11,7 @@ const contactInfo = [
   { icon: MessageCircle, label: "WhatsApp",    value: "+91 8920291416",             href: "https://wa.me/918920291416" },
   { icon: Mail,          label: "Email",       value: "support@thewebyatra.com",  href: "mailto:support@thewebyatra.com" },
   { icon: Phone,         label: "Call",        value: "+91 8920291416",             href: "tel:+918920291416" },
-  { icon: MapPin,        label: "Based In",    value: "Delhi, India · Remote Worldwide", href: null },
+  { icon: MapPin,        label: "Address",    value: "A-665, St. No. 12, Near Raza Chowk, Zakir Nagar, Delhi – 110025", href: "https://maps.google.com/?q=A-665,+Street+No.+12,+Near+Raza+Chowk,+Zakir+Nagar,+Delhi+110025,+India" },
   { icon: Clock,         label: "Response",    value: "Within 2–4 hours",           href: null },
 ];
 
@@ -184,26 +184,32 @@ export default function ContactPageClient() {
               </motion.div>
 
               {/* Map */}
-              <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-                className="rounded-2xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 overflow-hidden">
-                <div className="h-40 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-dark-100 dark:to-dark-50 relative flex items-center justify-center">
+              <motion.a
+                href="https://maps.google.com/?q=A-665,+Street+No.+12,+Near+Raza+Chowk,+Zakir+Nagar,+Delhi+110025,+India"
+                target="_blank" rel="noopener noreferrer"
+                initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+                className="block rounded-2xl border border-cream-400 dark:border-dark-50 bg-white dark:bg-dark-200 overflow-hidden hover:border-warm-400/50 hover:shadow-sm transition-all group">
+                <div className="h-36 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-dark-100 dark:to-dark-50 relative flex items-center justify-center">
                   <div className="absolute inset-0 animated-grid opacity-40" />
-                  <div className="relative text-center">
-                    <div className="text-4xl mb-2">📍</div>
-                    <div className="text-stone-800 dark:text-cream-200 font-medium text-sm">New Delhi, India</div>
-                    <div className="text-stone-500 dark:text-stone-500 text-xs mt-1">Remote · Worldwide</div>
+                  <div className="relative text-center px-4">
+                    <div className="text-3xl mb-1.5">📍</div>
+                    <div className="text-stone-800 dark:text-cream-200 font-semibold text-sm">TheWebYatra</div>
+                    <div className="text-stone-500 dark:text-stone-500 text-xs mt-0.5 leading-relaxed">
+                      A-665, Street No. 12, Near Raza Chowk<br />
+                      Zakir Nagar, Delhi – 110025, India
+                    </div>
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-4 h-4 rounded-full bg-warm-500 opacity-50 animate-ping absolute" />
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-4 h-4 rounded-full bg-warm-500 opacity-40 animate-ping absolute" />
                   </div>
                 </div>
-                <div className="p-3 text-center">
-                  <a href="https://maps.google.com/?q=New+Delhi" target="_blank" rel="noopener noreferrer"
-                    className="text-warm-600 dark:text-warm-400 text-xs underline underline-offset-2 hover:text-warm-800 dark:hover:text-warm-300">
-                    View on Google Maps
-                  </a>
+                <div className="px-4 py-3 flex items-center justify-center gap-1.5 border-t border-cream-400 dark:border-dark-50 group-hover:bg-warm-400/5 transition-colors">
+                  <MapPin size={12} className="text-warm-500 dark:text-warm-400" />
+                  <span className="text-warm-600 dark:text-warm-400 text-xs font-medium group-hover:text-warm-700 dark:group-hover:text-warm-300 transition-colors">
+                    Open in Google Maps
+                  </span>
                 </div>
-              </motion.div>
+              </motion.a>
             </div>
           </div>
         </div>
